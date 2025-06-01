@@ -13,30 +13,30 @@ permissions:
   contents: write
 
 jobs:
-  build-darwin:
-    uses: ./.github/workflows/build-darwin-arm64.yml
 
-  build-linux:
-    uses: ./.github/workflows/build-linux-x86-64.yml
 
-  build-windows:
-    uses: ./.github/workflows/build-windows-amd64.yml
-
-  publish:
-    needs: [build-darwin, build-linux, build-windows]
+  prepare:
+    # needs: [build-darwin, build-linux, build-windows]
 
     runs-on: ubuntu-latest
+
+    outputs:
+      date_tag: ${{ steps.get_date_tag.outputs.get_tag }}
+      apio_commit: ${{ steps.get_apio_commit.outputs.apio_commit }}
+      apio_version: ${{ steps.get_apio_version.outputs.apio_version }}
 
     env:
       DATE_TAG: date-tag-tbd
 
     steps:
 
-      - name: Create date tag
+      - name: Get date tag
+        id: get_date_tag
         run: |
           date_tag="$(date +'%Y-%m-%d')"
           echo "${date_tag}"
-          echo "DATE_TAG=${date_tag}" >> "$GITHUB_ENV"
+          # echo "DATE_TAG=${date_tag}" >> "$GITHUB_ENV"
+          echo "date_tag=${date_tag}" >> "$GITHUB_OUTPUT"
 
 
       - name: Checkout the apio repo
@@ -49,10 +49,12 @@ jobs:
 
 
       - name: Get apio commit SHA.
+        id: get_apio_commit
         run: |
           apio_commit=$(git -C apio-repo rev-parse HEAD)
           echo "${apio_commit}"
-          echo "APIO_COMMIT=${apio_commit}" >> "$GITHUB_ENV"
+          # echo "APIO_COMMIT=${apio_commit}" >> "$GITHUB_ENV"
+          echo "apio_commit=${apio_commit}" >> "$GITHUB_OUTPUT"
 
 
       - name: Pip install apio.
@@ -61,50 +63,85 @@ jobs:
           pip install -e apio-repo
 
 
-      - name: Extract apio version
+      - name: Get apio version
+        id: get_apio_version
         run: |
           apio_version="$(pip show apio | grep Version: | cut -d ' ' -f2)"
           echo ${apio_version}
-          echo "APIO_VERSION=${apio_version}" >> $GITHUB_ENV
+          # echo "APIO_VERSION=${apio_version}" >> $GITHUB_ENV
+          echo "apio_version=${apio_version}" >> $GITHUB_OUTPUT
+
+  # ----------------
 
 
-      - name: Download the build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
+  build-darwin:
+    needs: prepare
+    uses: ./.github/workflows/build-darwin-arm64.yml
+
+  build-linux:
+    needs: prepare
+    uses: ./.github/workflows/build-linux-x86-64.yml
+
+  build-windows:
+    needs: prepare
+    uses: ./.github/workflows/build-windows-amd64.yml
 
 
-      - name: List files
-        run: |
-          find artifacts
+  # ---------------
+
+  publish:
+      needs: [build-darwin, build-linux, build-windows]
+
+      runs-on: ubuntu-latest
+
+      env:
+        DATE_TAG: date-tag-tbd
+
+      steps:
+
+        - name: Init env.
+          run: |
+            echo "date_tag=${{ needs.prepare.outputs.date_tag }}" >> "$GITHUB_ENV"
+            echo "apio_commit=${{ needs.prepare.outputs.apio_version }}" >> "$GITHUB_ENV"
+            echo "apio_version=${{ needs.prepare.outputs.apio_version }}" >> "$GITHUB_ENV"
+
+        - name: Download the build artifacts
+          uses: actions/download-artifact@v4
+          with:
+            path: artifacts
 
 
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{env.DATE_TAG}}
-          name: ${{env.DATE_TAG}}
-          body: |
-            This is an automated build of the Apio's develop branch.
+        - name: List files
+          run: |
+            find artifacts
 
-            | Date tag     | ${{env.DATE_TAG}}     |
-            | Apio version | ${{env.APIO_VERSION}} |
-            | Apio commit  | ${{env.APIO_COMMIT}}  |
 
-            For installation instruction see (https://github.com/${{github.repository}}).
+        - name: Create GitHub release
+          uses: softprops/action-gh-release@v2
+          with:
+            tag_name: ${{env.DATE_TAG}}
+            name: ${{env.DATE_TAG}}
+            body: |
+              This is an automated build of the Apio's develop branch.
 
-            For the official releases see (https://github.com/FPGAwars/apio/releases).
+              | Date tag     | ${{env.DATE_TAG}}     |
+              | Apio version | ${{env.APIO_VERSION}} |
+              | Apio commit  | ${{env.APIO_COMMIT}}  |
 
-          files: |
-            # Darwin
-            artifacts/apio-darwin-arm64-bundle/**
-            artifacts/apio-darwin-arm64-installer/**
+              For installation instruction see (https://github.com/${{github.repository}}).
 
-            # Linux
-            artifacts/apio-linux-x86-64-bundle/**
-            artifacts/apio-linux-x86-64-debian/**
+              For the official releases see (https://github.com/FPGAwars/apio/releases).
 
-            # Windows
-            artifacts/apio-windows-amd64-bundle/**
-            artifacts/apio-windows-amd64-installer/**
+            files: |
+              # Darwin
+              artifacts/apio-darwin-arm64-bundle/**
+              artifacts/apio-darwin-arm64-installer/**
+
+              # Linux
+              artifacts/apio-linux-x86-64-bundle/**
+              artifacts/apio-linux-x86-64-debian/**
+
+              # Windows
+              artifacts/apio-windows-amd64-bundle/**
+              artifacts/apio-windows-amd64-installer/**
 
