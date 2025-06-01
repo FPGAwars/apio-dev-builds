@@ -38,6 +38,7 @@ jobs:
           echo "${date_tag}"
           echo "DATE_TAG=${date_tag}" >> "$GITHUB_ENV"
 
+
       - name: Checkout the apio repo
         uses: actions/checkout@v4
         with:
@@ -46,20 +47,31 @@ jobs:
           ref: develop
           path: apio-repo
 
+
       - name: Get apio commit SHA.
         run: |
-          cd apio-repo
-          apio_commit_hash=$(git rev-parse HEAD)
-          echo "Apio's commit: ${apio_commit_hash}}"
+          apio_commit=$(git -C apio-repo rev-parse HEAD)
+          echo "${apio_commit}"
+          echo "APIO_COMMIT=${apio_commit}" >> "$GITHUB_ENV"
+
+
+      - name: Extract apio version
+        run: |
+          apio_version="$(pip show apio | grep Version: | cut -d ' ' -f2)"
+          echo ${apio_version}
+          echo "APIO_VERSION=${apio_version}" >> $GITHUB_ENV
+
 
       - name: Download the build artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
 
+
       - name: List files
         run: |
           find artifacts
+
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
@@ -67,7 +79,10 @@ jobs:
           tag_name: ${{env.DATE_TAG}}
           name: ${{env.DATE_TAG}}
           body: |
-            This is the automated release of Apio's development branch for ${{env.DATE_TAG}} 
+            This is an automated build of the Apio's develop branch.
+            - Date tag:       [${{env.DATE_TAG}}]
+            - Apio version:   [${{env.APIO_VERSION}}]
+            - Apio commit:    [${{env.APIO_COMMIT}}]
 
             For installation instruction see (https://github.com/${{github.repository}}).
 
