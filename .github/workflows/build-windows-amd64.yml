@@ -3,16 +3,16 @@ name: build-windows-amd64
 
 on:
   # Run on each commit to this repo.
-  push:
+  # push:
 
   # Run every day at 2AM.
-  schedule:
-    - cron: '0 2 * * *'
+  # schedule:
+  #   - cron: '0 2 * * *'
 
-  # Allow manual activations.
-  workflow_dispatch:
+  # # Allow manual activations.
+  # workflow_dispatch:
 
-  # Can be called by other workflow.
+  # Called with input parameters.
   workflow_call:
 
 
