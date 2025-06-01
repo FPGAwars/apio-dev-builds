@@ -1,0 +1,224 @@
+name: build-darwin-arm64
+
+on:
+  # Run on each commit to this repo.
+  push:
+
+  # Run every day at 2AM.
+  schedule:
+    - cron: '0 2 * * *'
+
+  # Allow manual activations.
+  workflow_dispatch:
+
+  # Can be called by other workflow.
+  workflow_call:
+
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    outputs:
+      bundle: "apio-darwin-arm64-bundle"
+      installer: "apio-darwin-arm64-installer"
+
+    env:
+      DATE_TAG: date-tag-tbd
+      APIO_VERSION: apio-version-rbd
+
+    defaults:
+      run:
+        shell: bash  # Set Bash as the default shell
+
+    steps:
+      - name: Log architecture info
+        run: uname -m
+
+
+      - name: Create date tag
+        run: |
+          date_tag="$(date +'%Y-%m-%d')"
+          echo "${date_tag}"
+          echo "DATE_TAG=${date_tag}" >> "$GITHUB_ENV"
+
+
+      - name: Install python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'  # Adjust version as needed
+
+
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+        with:
+          path: apio-dev-build-repo
+
+
+      - name: Checkout the apio repo
+        uses: actions/checkout@v4
+        with:
+          # repository: FPGAwars/apio
+          repository: zapta/apio-dev
+          ref: develop
+          path: apio-repo
+
+
+      - name: Pip install apio.
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e apio-repo
+
+
+      - name: Pip install pyinstaller
+        run: |
+          pip install pyinstaller
+
+
+      # A temporary workaround until this fix will be released
+      # https://github.com/pyinstaller/pyinstaller-hooks-contrib/pull/913
+      # We delete the usb line in the hook pyinstaller hook list file
+      # rthooks.dat to disable this hook.
+      - name: Patch pyinstaller usb hook
+        run: |
+          module_dir=$(dirname "$(python -c 'import _pyinstaller_hooks_contrib; print(_pyinstaller_hooks_contrib.__file__)')")
+          f="$module_dir/rthooks.dat"
+          cat -n $f
+          sed -i.bak "/'usb':/d" "$f" && rm -f "${f}.bak"
+          cat -n $f
+
+
+      - name: Extract apio version
+        run: |
+          apio_version="$(pip show apio | grep Version: | cut -d ' ' -f2)"
+          echo ${apio_version}
+          echo "APIO_VERSION=${apio_version}" >> $GITHUB_ENV
+
+
+      - name: Setup working directories.
+        run: |
+          mkdir _work
+          mkdir _dist
+          mkdir _scripts
+          pwd
+          ls -la .
+
+
+      - name: Run pyinstaller
+        run: |
+          pyinstaller \
+            --log-level=DEBUG \
+            --workpath _work \
+            --distpath _dist \
+            apio-dev-build-repo/.github/workflows/resources/apio-pyinstaller.spec
+          echo "_dist:"
+          ls -al _dist
+          echo "_dist/apio:"
+          ls -al _dist/apio
+
+
+      - name: Add LICENSE file
+        run: |
+          cp apio-repo/LICENSE _dist/apio
+          echo "_dist:"
+          ls -al _dist
+          echo "_dist/apio:"
+          ls -al _dist/apio
+
+
+      - name: Add INFO file
+        run: |
+          info_file="_dist/apio/INFO"
+          echo "Build information" >  ${info_file}
+          echo "Time:         $(date +'%Y-%m-%d %H:%M:%S %Z')" >> ${info_file}
+          echo "Run ID:       $GITHUB_RUN_ID" >> ${info_file}
+          echo "Run number:   $GITHUB_RUN_NUMBER" >> ${info_file}
+          echo "Commit SHA:   $GITHUB_SHA" >>  ${info_file}
+          echo "Branch:       ${GITHUB_REF#refs/heads/}" >> ${info_file}
+          echo "Repo owner:   $GITHUB_REPOSITORY_OWNER" >> ${info_file}
+          echo "ReponName:    ${GITHUB_REPOSITORY#*/} ">> ${info_file}
+          echo "_dist/apio:"
+          ls -al _dist/apio
+          cat -n _dist/apio/INFO
+
+
+      - name: Add 'activate' file
+        run: |
+          cp apio-dev-build-repo/.github/workflows/darwin-resources/activate _dist/apio/activate
+          echo "_dist/apio:"
+          ls -al _dist/apio
+          cat -n _dist/apio/activate
+
+
+      - name: Zip the pyinstaller bundle
+        run: |
+          pushd _dist
+          bundle="apio-darwin-arm64-${APIO_VERSION}-${DATE_TAG}-bundle.zip"
+          zip -r -y ../${bundle} apio
+          popd
+          ls -al
+
+
+      - name: Delete the 'activate' file
+        run: |
+          rm _dist/apio/activate
+          echo "_dist/apio:"
+          ls -al _dist/apio
+
+
+      # This sets the app name in /Applications
+      - name: Rename apio to Apio
+        run: |
+          mv _dist/apio _dist/Apio
+          echo "_dist:"
+          ls -al _dist
+
+
+      - name: Create installer postinstall scripts
+        run: |
+          cp apio-dev-build-repo/.github/workflows/darwin-resources/postinstall _scripts/postinstall
+          chmod 755 _scripts/postinstall
+          echo "_scripts:"
+          ls -al _scripts
+          echo "_scripts/postinstall:"
+          cat -n _scripts/postinstall
+
+
+      - name: Run pkgbuild
+        run: |
+          pkgbuild --root _dist \
+                   --install-location /Applications \
+                   --identifier "io.github.fpgawars.apio" \
+                   --version "${APIO_VERSION}" \
+                   --scripts _scripts \
+                   --ownership recommended \
+                   apio-component.pkg
+          pwd
+          ls -al
+
+
+      - name: Run productbuild
+        run: |
+          productbuild --resources apio-dev-build-repo/.github/workflows/darwin-resources \
+                       --distribution apio-dev-build-repo/.github/workflows/darwin-resources/distribution.xml \
+                       --package-path . \
+                       "apio-darwin-arm64-${APIO_VERSION}-${DATE_TAG}-installer.pkg"
+          pwd
+          ls -al
+
+
+      - name: Export the pyinstaller bundle as an artifact.
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: error
+          name: "apio-darwin-arm64-bundle"
+          path: "apio-darwin-arm64-${{env.APIO_VERSION}}-${{env.DATE_TAG}}-bundle.zip"
+
+
+      - name: Export the installer file as an artifact.
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: error
+          name: "apio-darwin-arm64-installer"
+          path: "apio-darwin-arm64-${{env.APIO_VERSION}}-${{env.DATE_TAG}}-installer.pkg"
+

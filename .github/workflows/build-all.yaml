@@ -1,0 +1,74 @@
+name: "build-all"
+
+on:
+  # Run on each commit to this repo.
+  push:
+
+  # Allow manual activations.
+  workflow_dispatch:
+
+
+permissions:
+  # Allow release creation
+  contents: write
+
+jobs:
+  build-darwin:
+    uses: ./.github/workflows/build-darwin-arm64.yml
+
+  build-linux:
+    uses: ./.github/workflows/build-linux-x86-64.yml
+
+  build-windows:
+    uses: ./.github/workflows/build-windows-amd64.yml
+
+  publish:
+    needs: [build-darwin, build-linux, build-windows]
+
+    runs-on: ubuntu-latest
+
+    env:
+      DATE_TAG: date-tag-tbd
+
+    steps:
+
+      - name: Create date tag
+        run: |
+          date_tag="$(date +'%Y-%m-%d')"
+          echo "${date_tag}"
+          echo "DATE_TAG=${date_tag}" >> "$GITHUB_ENV"
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: List files
+        run: |
+          find artifacts
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{env.DATE_TAG}}
+          name: ${{env.DATE_TAG}}
+          body: |
+            This is the automated release of Apio's development branch for ${{env.DATE_TAG}} 
+
+            For installation instruction see (https://github.com/${{github.repository}}).
+
+            For the official releases see (https://github.com/FPGAwars/apio/releases).
+
+          files: |
+            # Darwin
+            artifacts/apio-darwin-arm64-bundle/**
+            artifacts/apio-darwin-arm64-installer/**
+
+            # Linux
+            artifacts/apio-linux-x86-64-bundle/**
+            artifacts/apio-linux-x86-64-debian/**
+
+            # Windows
+            artifacts/apio-windows-amd64-bundle/**
+            artifacts/apio-windows-amd64-installer/**
+
