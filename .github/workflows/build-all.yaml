@@ -14,6 +14,7 @@ permissions:
 
 jobs:
 
+# --------------
 
   prepare:
     # needs: [build-darwin, build-linux, build-windows]
@@ -21,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      date_tag: ${{ steps.get_date_tag.outputs.get_tag }}
+      date_tag: ${{ steps.get_date_tag.outputs.date_tag }}
       apio_commit: ${{ steps.get_apio_commit.outputs.apio_commit }}
       apio_version: ${{ steps.get_apio_version.outputs.apio_version }}
 
@@ -35,7 +36,6 @@ jobs:
         run: |
           date_tag="$(date +'%Y-%m-%d')"
           echo "${date_tag}"
-          # echo "DATE_TAG=${date_tag}" >> "$GITHUB_ENV"
           echo "date_tag=${date_tag}" >> "$GITHUB_OUTPUT"
 
 
@@ -53,7 +53,6 @@ jobs:
         run: |
           apio_commit=$(git -C apio-repo rev-parse HEAD)
           echo "${apio_commit}"
-          # echo "APIO_COMMIT=${apio_commit}" >> "$GITHUB_ENV"
           echo "apio_commit=${apio_commit}" >> "$GITHUB_OUTPUT"
 
 
@@ -68,11 +67,9 @@ jobs:
         run: |
           apio_version="$(pip show apio | grep Version: | cut -d ' ' -f2)"
           echo ${apio_version}
-          # echo "APIO_VERSION=${apio_version}" >> $GITHUB_ENV
           echo "apio_version=${apio_version}" >> $GITHUB_OUTPUT
 
-  # ----------------
-
+  # --------------
 
   build-darwin:
     needs: prepare
@@ -85,7 +82,6 @@ jobs:
   build-windows:
     needs: prepare
     uses: ./.github/workflows/build-windows-amd64.yml
-
 
   # ---------------
 
