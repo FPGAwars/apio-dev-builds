@@ -1,0 +1,213 @@
+name: build-linux-x86-64
+
+
+on:
+  # Run on each commit to this repo.
+  push:
+
+  # Run every day at 2AM.
+  schedule:
+    - cron: '0 2 * * *'
+
+  # Allow manual activations.
+  workflow_dispatch:
+
+  # Can be called by other workflow.
+  workflow_call:
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    outputs:
+      bundle:  "apio-linux-x86-64-bundle"
+      debian:  "apio-linux-x86-64-debian"
+
+    env:
+      DATE_TAG: date-tag-tbd
+      APIO_VERSION: apio-version-tbd
+
+    defaults:
+      run:
+        shell: bash  # Set Bash as the default shell
+
+    steps:
+      - name: Log architecture info
+        # Expecting 'x86_64'
+        run: uname -m
+
+
+      - name: Create date tag
+        run: |
+          date_tag="$(date +'%Y-%m-%d')"
+          echo "${date_tag}"
+          echo "DATE_TAG=${date_tag}" >> "$GITHUB_ENV"
+
+
+      - name: Install python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'  # Adjust version as needed
+
+
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+        with:
+          path: apio-dev-build-repo
+
+
+      - name: Checkout the apio repo
+        uses: actions/checkout@v4
+        with:
+          # repository: FPGAwars/apio
+          repository: zapta/apio-dev
+          ref: develop
+          path: apio-repo
+
+
+      - name: Pip install apio.
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e apio-repo
+
+
+      - name: Pip install pyinstaller
+        run: |
+          pip install pyinstaller
+
+
+      # A temporary workaround until this fix will be released
+      # https://github.com/pyinstaller/pyinstaller-hooks-contrib/pull/913
+      # We delete the usb line in the hook pyinstaller hook list file
+      # rthooks.dat to disable this hook.
+      - name: Patch pyinstaller usb hook
+        run: |
+          module_dir=$(dirname "$(python -c 'import _pyinstaller_hooks_contrib; print(_pyinstaller_hooks_contrib.__file__)')")
+          f="$module_dir/rthooks.dat"
+          cat -n $f
+          sed -i.bak "/'usb':/d" "$f" && rm -f "${f}.bak"
+          cat -n $f
+
+
+      - name: Extract apio version
+        run: |
+          apio_version="$(pip show apio | grep Version: | cut -d ' ' -f2)"
+          echo ${apio_version}
+          echo "APIO_VERSION=${apio_version}" >> $GITHUB_ENV
+
+
+      - name: Setup working directories.
+        run: |
+          mkdir _work
+          mkdir _dist
+          pwd
+          ls -la .
+
+
+      - name: Run pyinstaller
+        run: |
+          pyinstaller \
+            --log-level=DEBUG \
+            --workpath _work \
+            --distpath _dist \
+            apio-dev-build-repo/.github/workflows/resources/apio-pyinstaller.spec
+          echo "_dist:"
+          ls -al _dist
+          echo "_dist/apio:"
+          ls -al _dist/apio
+
+      - name: Check for symlinks
+        run: |
+          # If _dist/_internal contains symlinks, we need to revisit how
+          # we copy it around, while preserving symlinks. May need to copy
+          # using rsync, or just move it around instead of copying.
+          if find _dist -type l | grep -q .; then
+              echo "PyInstaller files contain symlinks"
+              exit 1
+          else
+              echo "No symlinks"
+          fi
+
+      - name: Add LICENSE file
+        run: |
+          cp apio-repo/LICENSE _dist/apio
+          echo "_dist:"
+          ls -al _dist
+          echo "_dist/apio:"
+          ls -al _dist/apio
+
+
+      - name: Add INFO file
+        run: |
+          info_file="_dist/apio/INFO"
+          echo "Build information" >  ${info_file}
+          echo "Time:         $(date +'%Y-%m-%d %H:%M:%S %Z')" >> ${info_file}
+          echo "Run ID:       $GITHUB_RUN_ID" >> ${info_file}
+          echo "Run number:   $GITHUB_RUN_NUMBER" >> ${info_file}
+          echo "Commit SHA:   $GITHUB_SHA" >>  ${info_file}
+          echo "Branch:       ${GITHUB_REF#refs/heads/}" >> ${info_file}
+          echo "Repo owner:   $GITHUB_REPOSITORY_OWNER" >> ${info_file}
+          echo "ReponName:    ${GITHUB_REPOSITORY#*/} ">> ${info_file}       
+          echo "_dist/apio:"
+          ls -al _dist/apio
+          cat -n _dist/apio/INFO
+
+
+      - name: Zip the pyinstaller bundle
+        run: |
+          pushd _dist
+          bundle="apio-linux-x86-64-${APIO_VERSION}-${DATE_TAG}-bundle.zip"
+          zip -r -y ../${bundle} apio
+          popd
+          ls -al
+
+
+      - name: Populate the debian package
+        run: |
+          mkdir _debian
+
+          # -- /opt/apio
+          mkdir -p _debian/opt/apio
+          cp _dist/apio/apio _debian/opt/apio
+          cp -r _dist/apio/_internal _debian/opt/apio
+
+          # /usr/local/bin
+          mkdir -p _debian/usr/local/bin
+          pushd _debian/usr/local/bin
+          ln -s ../../../opt/apio/apio apio
+          popd
+
+          # Package control file
+          mkdir _debian/DEBIAN
+          control="_debian/DEBIAN/control"
+          sed "s/\[APIO_VERSION\]/${APIO_VERSION}/g" apio-dev-build-repo/.github/workflows/linux-resources/control.template > ${control}
+
+          # Show info
+          find _debian
+          cat -n ${control}
+
+      - name: Set permissions for debian control file
+        run: find _debian/DEBIAN -type f -exec chmod 644 {} \;
+
+      - name: Build .deb package
+        run: |
+          dpkg-deb --build --root-owner-group _debian "apio-linux-x86-64-${APIO_VERSION}-${DATE_TAG}-debian.deb"
+          ls -l
+
+
+      - name: Export the pyinstaller archive as an artifact.
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: error
+          name: "apio-linux-x86-64-bundle"
+          path: "apio-linux-x86-64-${{env.APIO_VERSION}}-${{env.DATE_TAG}}-bundle.zip"
+
+
+      - name: Export the installer file as an artifact.
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: error
+          name: "apio-linux-x86-64-debian"
+          path: "apio-linux-x86-64-${{env.APIO_VERSION}}-${{env.DATE_TAG}}-debian.deb"
+
