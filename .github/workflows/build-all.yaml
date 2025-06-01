@@ -86,9 +86,10 @@ jobs:
           name: ${{env.DATE_TAG}}
           body: |
             This is an automated build of the Apio's develop branch.
-            - Date tag:       [${{env.DATE_TAG}}]
-            - Apio version:   [${{env.APIO_VERSION}}]
-            - Apio commit:    [${{env.APIO_COMMIT}}]
+
+            | Date tag     | ${{env.DATE_TAG}}     |
+            | Apio version | ${{env.APIO_VERSION}} |
+            | Apio commit  | ${{env.APIO_COMMIT}}  |
 
             For installation instruction see (https://github.com/${{github.repository}}).
 
