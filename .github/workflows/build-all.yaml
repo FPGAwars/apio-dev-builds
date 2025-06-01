@@ -38,7 +38,21 @@ jobs:
           echo "${date_tag}"
           echo "DATE_TAG=${date_tag}" >> "$GITHUB_ENV"
 
-      - name: Download artifacts
+      - name: Checkout the apio repo
+        uses: actions/checkout@v4
+        with:
+          repository: FPGAwars/apio
+          # repository: zapta/apio-dev
+          ref: develop
+          path: apio-repo
+
+      - name: Get apio commit SHA.
+        run: |
+          cd apio-repo
+          apio_commit_hash=$(git rev-parse HEAD)
+          echo "Apio's commit: ${apio_commit_hash}}"
+
+      - name: Download the build artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
