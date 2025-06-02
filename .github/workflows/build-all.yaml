@@ -91,8 +91,8 @@ jobs:
           echo "Build repo:    ${{ github.repository }}" >> ${info_file}
           echo "Run ID:        $GITHUB_RUN_ID" >> ${info_file}
           echo "Run number:    $GITHUB_RUN_NUMBER" >> ${info_file}
-          echo "Apio SHA:      $APIO_COMMIT" >>  ${info_file}
           echo "Apio repo:     $APIO_REPO" >> ${info_file}
+          echo "Apio SHA:      $APIO_COMMIT" >>  ${info_file}
           echo "Apio version:  $APIO_VERSION" >> ${info_file}
           echo "Release tag:   $APIO_TAG" >> ${info_file}
 
@@ -169,7 +169,7 @@ jobs:
         - name: Prepare release text
           run: |
 
-            echo "$APIO_CONFIG" | jq . > APIO_CONFIG.json
+            echo '${{needs.prepare.outputs.apio_config}}' | jq . > APIO_CONFIG.json
 
             out=RELEASE_BODY.txt
             echo "This is an automated daily build of the Apio's repo 'develop' branch." >> $out
@@ -177,16 +177,16 @@ jobs:
             echo -e "\n<br>\n" >> $out
 
             echo "BUILD_INFO:" >> $out
-            echo "'''" >> $out
+            echo '```' >> $out
             cat artifacts/apio-build-info/BUILD_INFO >> $out
-            echo "'''" >> $out
+            echo '```' >> $out
 
             echo -e "\n<br>\n" >> $out
 
             echo "APIO_CONFIG:" >> $out
-            echo "'''" >> $out
+            echo '```' >> $out
             cat APIO_CONFIG.json >> $out
-            echo "'''" >> $out
+            echo '```' >> $out
 
             echo -e "\n<br>\n" >> $out
 
