@@ -97,7 +97,7 @@ jobs:
         - name: Setup env.
           run: |
             echo "DATE_TAG=${{ needs.prepare.outputs.date_tag }}" >> "$GITHUB_ENV"
-            echo "APIO_COMMIT=${{ needs.prepare.outputs.apio_version }}" >> "$GITHUB_ENV"
+            echo "APIO_COMMIT=${{ needs.prepare.outputs.apio_commit }}" >> "$GITHUB_ENV"
             echo "APIO_VERSION=${{ needs.prepare.outputs.apio_version }}" >> "$GITHUB_ENV"
 
         - name: Download the build artifacts
