@@ -86,7 +86,7 @@ jobs:
   # ---------------
 
   publish:
-      needs: [build-darwin, build-linux, build-windows]
+      needs: [prepare, build-darwin, build-linux, build-windows]
 
       runs-on: ubuntu-latest
 
@@ -97,9 +97,9 @@ jobs:
 
         - name: Init env.
           run: |
-            echo "date_tag=${{ needs.prepare.outputs.date_tag }}" >> "$GITHUB_ENV"
-            echo "apio_commit=${{ needs.prepare.outputs.apio_version }}" >> "$GITHUB_ENV"
-            echo "apio_version=${{ needs.prepare.outputs.apio_version }}" >> "$GITHUB_ENV"
+            echo "DATE_TAG=${{ needs.prepare.outputs.date_tag }}" >> "$GITHUB_ENV"
+            echo "APIO_COMMIT=${{ needs.prepare.outputs.apio_version }}" >> "$GITHUB_ENV"
+            echo "APIO_VERSION=${{ needs.prepare.outputs.apio_version }}" >> "$GITHUB_ENV"
 
         - name: Download the build artifacts
           uses: actions/download-artifact@v4
