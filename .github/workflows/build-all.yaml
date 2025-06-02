@@ -182,8 +182,10 @@ jobs:
 
             # Remove the run id unique part.
             mv artifacts/apio-build-info-${APIO_RUN} artifacts/apio-build-info
+
+            echo
             find artifacts
-            cat artifacts/apio-build-info
+            cat artifacts/apio-build-info/BUILD_INFO
 
 
         - name: Prepare release text
