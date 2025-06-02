@@ -12,29 +12,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    outputs:
-      bundle:  "apio-linux-x86-64-bundle"
-      debian:  "apio-linux-x86-64-debian"
-
-    env:
-      APIO_REPO: value-tbd
-      APIO_TAG: value-tbd
-      APIO_COMMIT: value-tbd
-      APIO_VERSION: value-tbd
-
     defaults:
       run:
         shell: bash  # Set Bash as the default shell
 
     steps:
-      - name: Log architecture info
-        # Expecting 'x86_64'
-        run: uname -m
+      - name: Check architecture
+        run: |
+          uname
+          uname -m
+          if [[ "$(uname)" != "Linux" || "$(uname -m)" != "x86_64" ]]; then
+            exit 1
+          fi
 
-        
-      # This copy the apio config json key/val to the env.
+
+      # This copies the apio config json key/val to the env.
       - name: Set up env
         run: |
+          echo '${{inputs.apio_config}}' | jq .
           echo '${{inputs.apio_config}}' | jq -r 'to_entries | .[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
 
 
@@ -47,7 +42,7 @@ jobs:
       - name: Checkout this repo
         uses: actions/checkout@v4
         with:
-          path: apio-dev-builds-repo
+          path: builder-repo
 
 
       - name: Checkout the apio repo
@@ -96,7 +91,7 @@ jobs:
             --log-level=DEBUG \
             --workpath _work \
             --distpath _dist \
-            apio-dev-builds-repo/.github/workflows/resources/apio-pyinstaller.spec
+            builder-repo/.github/workflows/resources/apio-pyinstaller.spec
           echo "_dist:"
           ls -al _dist
           echo "_dist/apio:"
@@ -114,29 +109,30 @@ jobs:
               echo "No symlinks"
           fi
 
-      - name: Add LICENSE file
+
+      - name: Download the build-info artifact
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          workflow: ${{env.APIO_WF}}
+          run_id: ${{env.APIO_RUN}}
+          name: apio-build-info-${{env.APIO_RUN}}
+          path: artifacts
+
+
+      - name: Add the BUILD-INFO file
+        run: |
+          cp artifacts/BUILD-INFO _dist/apio
+          cat -n _dist/apio/BUILD-INFO
+
+
+      - name: Add the LICENSE file
         run: |
           cp apio-repo/LICENSE _dist/apio
-          echo "_dist:"
-          ls -al _dist
-          echo "_dist/apio:"
-          ls -al _dist/apio
+          cat _dist/apio/LICENSE
 
-
-      - name: Add INFO file
+      - name: List the bundle files
         run: |
-          info_file="_dist/apio/INFO"
-          echo "Build information" >  ${info_file}
-          echo "Time:         $(date +'%Y-%m-%d %H:%M:%S %Z')" >> ${info_file}
-          echo "Run ID:       $GITHUB_RUN_ID" >> ${info_file}
-          echo "Run number:   $GITHUB_RUN_NUMBER" >> ${info_file}
-          echo "Commit SHA:   $GITHUB_SHA" >>  ${info_file}
-          echo "Branch:       ${GITHUB_REF#refs/heads/}" >> ${info_file}
-          echo "Repo owner:   $GITHUB_REPOSITORY_OWNER" >> ${info_file}
-          echo "ReponName:    ${GITHUB_REPOSITORY#*/} ">> ${info_file}
-          echo "_dist/apio:"
-          ls -al _dist/apio
-          cat -n _dist/apio/INFO
+          find _dist
 
 
       - name: Zip the pyinstaller bundle
@@ -166,7 +162,7 @@ jobs:
           # Package control file
           mkdir _debian/DEBIAN
           control="_debian/DEBIAN/control"
-          sed "s/\[APIO_VERSION\]/${APIO_VERSION}/g" apio-dev-builds-repo/.github/workflows/resources/linux/control.template > ${control}
+          sed "s/\[APIO_VERSION\]/${APIO_VERSION}/g" builder-repo/.github/workflows/resources/linux/control.template > ${control}
 
           # Show info
           find _debian

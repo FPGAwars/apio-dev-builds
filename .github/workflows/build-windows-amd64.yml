@@ -13,29 +13,24 @@ jobs:
   build:
     runs-on: windows-latest
 
-    outputs:
-      bundle:     "apio-windows-amd64-bundle"
-      installer:  "apio-windows-amd64-installer"
-
-    env:
-      APIO_REPO: value-tbd
-      APIO_TAG: value-tbd
-      APIO_COMMIT: value-tbd
-      APIO_VERSION: value-tbd
-
     defaults:
       run:
         shell: bash  # Set Bash as the default shell
 
     steps:
-      - name: Show system info
+      - name: Check architecture
         run: |
-          systeminfo
+          uname -o
+          uname -m
+          if [[ "$(uname -o 2>/dev/null)" != "Msys" || "$(uname -m)" != "x86_64" ]]; then
+            exit 1
+          fi
 
 
-      # This copy the apio config json key/val to the env.
+      # This copies the apio config json key/val to the env.
       - name: Set up env
         run: |
+          echo '${{inputs.apio_config}}' | jq .
           echo '${{inputs.apio_config}}' | jq -r 'to_entries | .[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
 
 
@@ -48,7 +43,7 @@ jobs:
       - name: Checkout this repo
         uses: actions/checkout@v4
         with:
-          path: apio-dev-builds-repo
+          path: builder-repo
 
 
       - name: Checkout the apio repo
@@ -98,7 +93,7 @@ jobs:
             --log-level=DEBUG \
             --workpath _work \
             --distpath _dist \
-            apio-dev-builds-repo/.github/workflows/resources/apio-pyinstaller.spec
+            builder-repo/.github/workflows/resources/apio-pyinstaller.spec
           echo "_dist:"
           ls -al _dist
           echo "_dist/apio:"
@@ -106,29 +101,30 @@ jobs:
           file _dist/apio/apio
 
 
-      - name: Add LICENSE file
-        run: |
-          cp apio-repo/LICENSE _dist/apio/LICENSE
-          echo "_dist:"
-          ls -al _dist
-          echo "_dist/apio:"
-          ls -al _dist/apio
+      - name: Download the build-info artifact
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          workflow: ${{env.APIO_WF}}
+          run_id: ${{env.APIO_RUN}}
+          name: apio-build-info-${{env.APIO_RUN}}
+          path: artifacts
 
 
-      - name: Add INFO file
+      - name: Add the BUILD-INFO file
         run: |
-          out="_dist/apio/INFO"
-          echo "Build information" >  ${out}
-          echo "Time:         $(date +'%Y-%m-%d %H:%M:%S %Z')" >> ${out}
-          echo "Run ID:       $GITHUB_RUN_ID" >> ${out}
-          echo "Run number:   $GITHUB_RUN_NUMBER" >> ${out}
-          echo "Commit SHA:   $GITHUB_SHA" >>  ${out}
-          echo "Branch:       ${GITHUB_REF#refs/heads/}" >> ${out}
-          echo "Repo owner:   $GITHUB_REPOSITORY_OWNER" >> ${out}
-          echo "ReponName:    ${GITHUB_REPOSITORY#*/} ">> ${out}
-          echo "_dist/apio:"
-          ls -al _dist/apio
-          cat -n ${out}
+          cp artifacts/BUILD-INFO _dist/apio
+          cat -n _dist/apio/BUILD-INFO
+
+
+      - name: Add the LICENSE file
+        run: |
+          cp apio-repo/LICENSE _dist/apio
+          cat _dist/apio/LICENSE
+
+
+      - name: List the bundle files
+        run: |
+          find _dist
 
 
       - name: Zip the pyinstaller bundle
@@ -145,7 +141,7 @@ jobs:
       - name: Create innosetup.iss
         run: |
           out="innosetup.iss"
-          sed "s/\[APIO_VERSION\]/${APIO_VERSION}/g" apio-dev-builds-repo/.github/workflows/resources/windows/innosetup.template > ${out}
+          sed "s/\[APIO_VERSION\]/${APIO_VERSION}/g" builder-repo/.github/workflows/resources/windows/innosetup.template > ${out}
           ls -al
           cat -n ${out}
 
