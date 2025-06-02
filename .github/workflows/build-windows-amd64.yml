@@ -13,16 +13,6 @@ jobs:
   build:
     runs-on: windows-latest
 
-    # outputs:
-    #   bundle:     "apio-windows-amd64-bundle"
-    #   installer:  "apio-windows-amd64-installer"
-
-    # env:
-    #   APIO_REPO: value-tbd
-    #   APIO_TAG: value-tbd
-    #   APIO_COMMIT: value-tbd
-    #   APIO_VERSION: value-tbd
-
     defaults:
       run:
         shell: bash  # Set Bash as the default shell
@@ -111,12 +101,6 @@ jobs:
           file _dist/apio/apio
 
 
-      - name: Add the LICENSE file
-        run: |
-          cp apio-repo/LICENSE _dist/apio
-          cat _dist/apio/LICENSE
-
-
       - name: Download the build-info artifact
         uses: dawidd6/action-download-artifact@v3
         with:
@@ -130,6 +114,12 @@ jobs:
         run: |
           cp artifacts/BUILD-INFO _dist/apio
           cat -n _dist/apio/BUILD-INFO
+
+
+      - name: Add the LICENSE file
+        run: |
+          cp apio-repo/LICENSE _dist/apio
+          cat _dist/apio/LICENSE
 
 
       - name: List the bundle files

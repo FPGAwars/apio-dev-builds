@@ -11,16 +11,6 @@ jobs:
   build:
     runs-on: macos-latest
 
-    # outputs:
-    #   bundle: "apio-darwin-arm64-bundle"
-    #   installer: "apio-darwin-arm64-installer"
-
-    # env:
-    #   APIO_REPO: value-tbd
-    #   APIO_TAG: value-tbd
-    #   APIO_COMMIT: value-tbd
-    #   APIO_VERSION: value-tbd
-
     defaults:
       run:
         shell: bash  # Set Bash as the default shell
@@ -108,11 +98,6 @@ jobs:
           ls -al _dist/apio
 
 
-      - name: Add the LICENSE file
-        run: |
-          cp apio-repo/LICENSE _dist/apio
-          cat _dist/apio/LICENSE
-
       - name: Download the build-info artifact
         uses: dawidd6/action-download-artifact@v3
         with:
@@ -126,6 +111,12 @@ jobs:
         run: |
           cp artifacts/BUILD-INFO _dist/apio
           cat -n _dist/apio/BUILD-INFO
+
+
+      - name: Add the LICENSE file
+        run: |
+          cp apio-repo/LICENSE _dist/apio
+          cat _dist/apio/LICENSE
 
 
       - name: Add the activate file

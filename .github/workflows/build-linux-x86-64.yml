@@ -12,16 +12,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    # outputs:
-    #   bundle:  "apio-linux-x86-64-bundle"
-    #   debian:  "apio-linux-x86-64-debian"
-
-    # env:
-    #   APIO_REPO: value-tbd
-    #   APIO_TAG: value-tbd
-    #   APIO_COMMIT: value-tbd
-    #   APIO_VERSION: value-tbd
-
     defaults:
       run:
         shell: bash  # Set Bash as the default shell
@@ -119,12 +109,6 @@ jobs:
               echo "No symlinks"
           fi
 
-          
-      - name: Add the LICENSE file
-        run: |
-          cp apio-repo/LICENSE _dist/apio
-          cat _dist/apio/LICENSE
-
 
       - name: Download the build-info artifact
         uses: dawidd6/action-download-artifact@v3
@@ -140,6 +124,11 @@ jobs:
           cp artifacts/BUILD-INFO _dist/apio
           cat -n _dist/apio/BUILD-INFO
 
+
+      - name: Add the LICENSE file
+        run: |
+          cp apio-repo/LICENSE _dist/apio
+          cat _dist/apio/LICENSE
 
       - name: List the bundle files
         run: |
