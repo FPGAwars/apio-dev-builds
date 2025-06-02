@@ -71,7 +71,7 @@ jobs:
           echo "${apio_tag}"
 
           apio_config=$(jq -n -c \
-              --arg APIO_RUN     "$GITHUB_RUN_ID" \
+              --arg APIO_RUN     "${{github.run_id}}" \
               --arg APIO_REPO    "$APIO_REPO" \
               --arg APIO_COMMIT  "$apio_commit" \
               --arg APIO_VERSION "$apio_version" \
@@ -97,10 +97,10 @@ jobs:
 
           echo "Builder info" >  ${out}
           echo "Time:             $(date +'%Y-%m-%d %H:%M:%S %Z')" >> ${out}
-          echo "Build repo:       ${{ github.repository }}" >> ${out}
+          echo "Build repo:       ${{github.repository}}" >> ${out}
           echo "Builder commit:   $builder_commit" >>  ${out}
-          echo "Run ID:           $GITHUB_RUN_ID" >> ${out}
-          echo "Run number:       $GITHUB_RUN_NUMBER" >> ${out}
+          echo "Run ID:           ${{github.run_id}}" >> ${out}
+          echo "Run number:       ${{github.run_number}}" >> ${out}
 
           echo >> ${out}
           echo "Apio info" >>  ${out}
@@ -119,7 +119,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
-          name: "apio-build-info-${{env.GITHUB_RUN_ID}}"
+          name: "apio-build-info-${{github.run_id}}"
           path: "BUILD_INFO"
 
 
