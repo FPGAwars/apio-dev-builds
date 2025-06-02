@@ -119,7 +119,6 @@ jobs:
             body: |
               This is an automated build of the Apio's develop branch.
 
-              | Item         | Value                 |
               | ------------ | --------------------- |
               | Date tag     | ${{env.DATE_TAG}}     |
               | Apio version | ${{env.APIO_VERSION}} |
