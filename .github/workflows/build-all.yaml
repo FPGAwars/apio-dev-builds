@@ -90,7 +90,7 @@ jobs:
             --arg APIO_TAG "$APIO_TAG" \
             '{APIO_REPO: $APIO_REPO, APIO_COMMIT: $APIO_COMMIT, APIO_VERSION: $APIO_VERSION, APIO_TAG: $APIO_TAG}')
 
-          echo "$apio_config"
+          echo "apio_config: [$apio_config]"
           echo "apio_config=$apio_config" >> "$GITHUB_OUTPUT"
 
         
