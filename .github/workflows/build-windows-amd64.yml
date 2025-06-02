@@ -30,6 +30,8 @@ jobs:
     steps:
       - name: Check architecture
         run: |
+          uname -o
+          uname -m
           if [[ "$(uname -o 2>/dev/null)" != "Msys" || "$(uname -m)" != "x86_64" ]]; then
             exit 1
           fi

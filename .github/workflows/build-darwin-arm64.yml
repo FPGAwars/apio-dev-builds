@@ -28,6 +28,8 @@ jobs:
     steps:
       - name: Check architecture
         run: |
+          uname
+          uname -m
           if [[ "$(uname)" != "Darwin" || "$(uname -m)" != "arm64" ]]; then
             exit 1
           fi

@@ -29,6 +29,8 @@ jobs:
     steps:
       - name: Check architecture
         run: |
+          uname
+          uname -m
           if [[ "$(uname)" != "Linux" || "$(uname -m)" != "x86_64" ]]; then
             exit 1
           fi
