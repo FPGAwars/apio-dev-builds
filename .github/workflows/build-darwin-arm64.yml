@@ -3,19 +3,9 @@ name: build-darwin-arm64
 on:
   workflow_call:
     inputs:
-      apio_repo:
+      apio_config:
         required: true
         type: string
-      apio_tag:
-        required: true
-        type: string
-      apio_commit:
-        required: true
-        type: string
-      apio_version:
-        required: true
-        type: string
-
 
 jobs:
   build:
@@ -39,12 +29,11 @@ jobs:
       - name: Log architecture info
         run: uname -m
 
+        
+      # This copy the apio config json key/val to the env.
       - name: Set up env
         run: |
-          echo "APIO_REPO=${{inputs.apio_repo}}" >> "$GITHUB_ENV"
-          echo "APIO_TAG=${{inputs.apio_tag}}" >> "$GITHUB_ENV"
-          echo "APIO_COMMIT=${{inputs.apio_commit}}" >> "$GITHUB_ENV"
-          echo "APIO_VERSION=${{inputs.apio_version}}" >> "$GITHUB_ENV"
+          echo '${{inputs.apio_config}}' | jq -r 'to_entries | .[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
 
 
       - name: Install python
@@ -56,7 +45,7 @@ jobs:
       - name: Checkout this repo
         uses: actions/checkout@v4
         with:
-          path: apio-dev-build-repo
+          path: apio-dev-builds-repo
 
 
       - name: Checkout the apio repo
@@ -107,7 +96,7 @@ jobs:
             --log-level=DEBUG \
             --workpath _work \
             --distpath _dist \
-            apio-dev-build-repo/.github/workflows/resources/apio-pyinstaller.spec
+            apio-dev-builds-repo/.github/workflows/resources/apio-pyinstaller.spec
           echo "_dist:"
           ls -al _dist
           echo "_dist/apio:"
@@ -141,7 +130,7 @@ jobs:
 
       - name: Add 'activate' file
         run: |
-          cp apio-dev-build-repo/.github/workflows/darwin-resources/activate _dist/apio/activate
+          cp apio-dev-builds-repo/.github/workflows/resources/darwin/activate _dist/apio/activate
           echo "_dist/apio:"
           ls -al _dist/apio
           cat -n _dist/apio/activate
@@ -173,7 +162,7 @@ jobs:
 
       - name: Create installer postinstall scripts
         run: |
-          cp apio-dev-build-repo/.github/workflows/darwin-resources/postinstall _scripts/postinstall
+          cp apio-dev-builds-repo/.github/workflows/resources/darwin/postinstall _scripts/postinstall
           chmod 755 _scripts/postinstall
           echo "_scripts:"
           ls -al _scripts
@@ -196,8 +185,8 @@ jobs:
 
       - name: Run productbuild
         run: |
-          productbuild --resources apio-dev-build-repo/.github/workflows/darwin-resources \
-                       --distribution apio-dev-build-repo/.github/workflows/darwin-resources/distribution.xml \
+          productbuild --resources apio-dev-builds-repo/.github/workflows/resources/darwin \
+                       --distribution apio-dev-builds-repo/.github/workflows/resources/darwin/distribution.xml \
                        --package-path . \
                        "apio-darwin-arm64-${APIO_VERSION}-${APIO_TAG}-installer.pkg"
           pwd

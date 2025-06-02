@@ -4,16 +4,7 @@ name: build-windows-amd64
 on:
   workflow_call:
     inputs:
-      apio_repo:
-        required: true
-        type: string
-      apio_tag:
-        required: true
-        type: string
-      apio_commit:
-        required: true
-        type: string
-      apio_version:
+      apio_config:
         required: true
         type: string
 
@@ -42,12 +33,10 @@ jobs:
           systeminfo
 
 
+      # This copy the apio config json key/val to the env.
       - name: Set up env
         run: |
-          echo "APIO_REPO=${{inputs.apio_repo}}" >> "$GITHUB_ENV"
-          echo "APIO_TAG=${{inputs.apio_tag}}" >> "$GITHUB_ENV"
-          echo "APIO_COMMIT=${{inputs.apio_commit}}" >> "$GITHUB_ENV"
-          echo "APIO_VERSION=${{inputs.apio_version}}" >> "$GITHUB_ENV"
+          echo '${{inputs.apio_config}}' | jq -r 'to_entries | .[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
 
 
       - name: Install python
@@ -59,7 +48,7 @@ jobs:
       - name: Checkout this repo
         uses: actions/checkout@v4
         with:
-          path: apio-dev-build-repo
+          path: apio-dev-builds-repo
 
 
       - name: Checkout the apio repo
@@ -109,7 +98,7 @@ jobs:
             --log-level=DEBUG \
             --workpath _work \
             --distpath _dist \
-            apio-dev-build-repo/.github/workflows/resources/apio-pyinstaller.spec
+            apio-dev-builds-repo/.github/workflows/resources/apio-pyinstaller.spec
           echo "_dist:"
           ls -al _dist
           echo "_dist/apio:"
@@ -156,7 +145,7 @@ jobs:
       - name: Create innosetup.iss
         run: |
           out="innosetup.iss"
-          sed "s/\[APIO_VERSION\]/${APIO_VERSION}/g" apio-dev-build-repo/.github/workflows/windows-resources/innosetup.template > ${out}
+          sed "s/\[APIO_VERSION\]/${APIO_VERSION}/g" apio-dev-builds-repo/.github/workflows/resources/windows/innosetup.template > ${out}
           ls -al
           cat -n ${out}
 
