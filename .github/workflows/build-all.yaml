@@ -26,7 +26,9 @@ jobs:
       apio_version: ${{ steps.get_apio_version.outputs.apio_version }}
 
     env:
-      DATE_TAG: date-tag-tbd
+      DATE_TAG: value-tbd
+      APIO_COMMIT: value-tbd
+      APIO_CERSION: value-tbd
 
     steps:
 
@@ -99,7 +101,7 @@ jobs:
 
       steps:
 
-        - name: Setup env.
+        - name: Set up env.
           run: |
             echo "DATE_TAG=${{ needs.prepare.outputs.date_tag }}" >> "$GITHUB_ENV"
             echo "APIO_COMMIT=${{ needs.prepare.outputs.apio_commit }}" >> "$GITHUB_ENV"
@@ -124,10 +126,9 @@ jobs:
             body: |
               This is an automated build of the Apio's repo `develop` branch.
 
-              | ------------ | --------------------- |
-              | Date tag     | ${{env.DATE_TAG}}     |
-              | Apio version | ${{env.APIO_VERSION}} |
-              | Apio commit  | ${{env.APIO_COMMIT}}  |
+              * `DATE_TAG`: ${{env.DATE_TAG}}
+              * `APIO_VERSION`: ${{env.APIO_VERSION}}
+              * `APIO_COMMIT`: ${{env.APIO_COMMIT}}
 
               Resources
               * [installation instructions](https://github.com/${{github.repository}}).

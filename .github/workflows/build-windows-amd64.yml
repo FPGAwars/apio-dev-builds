@@ -25,8 +25,9 @@ jobs:
       installer:  "apio-windows-amd64-installer"
 
     env:
-      DATE_TAG: date-tag-tbd
-      APIO_VERSION: apio-version-rbd
+      DATE_TAG: value-tbd
+      APIO_COMMIT: value-tbd
+      APIO_CERSION: value-tbd
 
     defaults:
       run:
@@ -65,7 +66,7 @@ jobs:
           ref: develop
           path: apio-repo
           fetch-depth: 0
-          
+
 
       - name: Pip install apio.
         run: |
