@@ -28,9 +28,11 @@ jobs:
         shell: bash  # Set Bash as the default shell
 
     steps:
-      - name: Show system info
+      - name: Check architecture
         run: |
-          systeminfo
+          if [[ "$(uname -o 2>/dev/null)" != "Msys" || "$(uname -m)" != "x86_64" ]]; then
+            exit 1
+          fi
 
 
       # This copy the apio config json key/val to the env.

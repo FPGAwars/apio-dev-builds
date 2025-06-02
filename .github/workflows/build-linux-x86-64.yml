@@ -27,11 +27,13 @@ jobs:
         shell: bash  # Set Bash as the default shell
 
     steps:
-      - name: Log architecture info
-        # Expecting 'x86_64'
-        run: uname -m
+      - name: Check architecture
+        run: |
+          if [[ "$(uname)" != "Linux" || "$(uname -m)" != "x86_64" ]]; then
+            exit 1
+          fi
 
-        
+
       # This copy the apio config json key/val to the env.
       - name: Set up env
         run: |
