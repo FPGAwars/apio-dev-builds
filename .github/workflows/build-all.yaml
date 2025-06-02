@@ -103,7 +103,7 @@ jobs:
           echo "Run number:       $GITHUB_RUN_NUMBER" >> ${out}
 
           echo >> ${out}
-          echo "Build information" >>  ${out}
+          echo "Build info" >>  ${out}
           echo "Apio repo:        $APIO_REPO" >> ${out}
           echo "Apio SHA:         $APIO_COMMIT" >>  ${out}
           echo "Apio version:     $APIO_VERSION" >> ${out}
@@ -189,16 +189,15 @@ jobs:
 
             echo -e "\n<br>\n" >> $out
 
-            echo "BUILD_INFO:" >> $out
             echo '```' >> $out
-            cat artifacts/apio-build-info/BUILD_INFO >> $out
+            echo "APIO_CONFIG" >> $out
+            cat APIO_CONFIG.json >> $out
             echo '```' >> $out
 
             echo -e "\n<br>\n" >> $out
 
-            echo "APIO_CONFIG:" >> $out
             echo '```' >> $out
-            cat APIO_CONFIG.json >> $out
+            cat artifacts/apio-build-info/BUILD_INFO >> $out
             echo '```' >> $out
 
             echo -e "\n<br>\n" >> $out
