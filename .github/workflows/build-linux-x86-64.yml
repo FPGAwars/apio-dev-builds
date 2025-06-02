@@ -26,7 +26,7 @@ jobs:
     env:
       DATE_TAG: value-tbd
       APIO_COMMIT: value-tbd
-      APIO_CERSION: value-tbd
+      APIO_VERSION: value-tbd
 
     defaults:
       run:
