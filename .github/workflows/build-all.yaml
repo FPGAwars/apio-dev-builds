@@ -71,12 +71,13 @@ jobs:
           echo "${apio_tag}"
 
           apio_config=$(jq -n -c \
+              --arg APIO_WF      "${{ github.workflow }}" \
               --arg APIO_RUN     "${{github.run_id}}" \
               --arg APIO_REPO    "$APIO_REPO" \
               --arg APIO_COMMIT  "$apio_commit" \
               --arg APIO_VERSION "$apio_version" \
               --arg APIO_TAG     "$apio_tag" \
-              '{APIO_RUN: $APIO_RUN, APIO_REPO: $APIO_REPO, APIO_COMMIT: $APIO_COMMIT, APIO_VERSION: $APIO_VERSION, APIO_TAG: $APIO_TAG}')
+              '{APIO_WF: $APIO_WF, APIO_RUN: $APIO_RUN, APIO_REPO: $APIO_REPO, APIO_COMMIT: $APIO_COMMIT, APIO_VERSION: $APIO_VERSION, APIO_TAG: $APIO_TAG}')
 
           echo "$apio_config"
           echo "apio_config=$apio_config" >> "$GITHUB_OUTPUT"
@@ -85,6 +86,7 @@ jobs:
       # This copies the apio config json key/val to the env.
       - name: Set up env
         run: |
+          echo '${{steps.get_apio_config_json.outputs.apio_config}}' | jq .
           echo '${{steps.get_apio_config_json.outputs.apio_config}}' | jq -r 'to_entries | .[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
 
 
@@ -167,6 +169,7 @@ jobs:
         # This copy the apio config json key/val to the env.
         - name: Set up env
           run: |
+            echo '${{needs.prepare.outputs.apio_config}}' | jq .
             echo '${{needs.prepare.outputs.apio_config}}' | jq -r 'to_entries | .[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
 
 
