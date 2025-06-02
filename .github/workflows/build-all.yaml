@@ -179,7 +179,7 @@ jobs:
             path: artifacts
 
 
-        - name: List artifact files
+        - name: Rename apio-build-info artifact
           run: |
             find artifacts
 
