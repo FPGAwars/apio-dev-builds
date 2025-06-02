@@ -3,18 +3,21 @@ name: build-darwin-arm64
 on:
   workflow_call:
     inputs:
-      apio_repo:
+      apio_config:
         required: true
         type: string
-      apio_tag:
-        required: true
-        type: string
-      apio_commit:
-        required: true
-        type: string
-      apio_version:
-        required: true
-        type: string
+      # apio_repo:
+      #   required: true
+      #   type: string
+      # apio_tag:
+      #   required: true
+      #   type: string
+      # apio_commit:
+      #   required: true
+      #   type: string
+      # apio_version:
+      #   required: true
+      #   type: string
 
 
 jobs:
@@ -41,10 +44,12 @@ jobs:
 
       - name: Set up env
         run: |
-          echo "APIO_REPO=${{inputs.apio_repo}}" >> "$GITHUB_ENV"
-          echo "APIO_TAG=${{inputs.apio_tag}}" >> "$GITHUB_ENV"
-          echo "APIO_COMMIT=${{inputs.apio_commit}}" >> "$GITHUB_ENV"
-          echo "APIO_VERSION=${{inputs.apio_version}}" >> "$GITHUB_ENV"
+          echo '${{ inputs.apio_config }}' | jq -r 'to_entries | .[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
+
+          # echo "APIO_REPO=${{inputs.apio_repo}}" >> "$GITHUB_ENV"
+          # echo "APIO_TAG=${{inputs.apio_tag}}" >> "$GITHUB_ENV"
+          # echo "APIO_COMMIT=${{inputs.apio_commit}}" >> "$GITHUB_ENV"
+          # echo "APIO_VERSION=${{inputs.apio_version}}" >> "$GITHUB_ENV"
 
 
       - name: Install python
