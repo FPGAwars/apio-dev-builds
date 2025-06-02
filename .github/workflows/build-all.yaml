@@ -23,9 +23,9 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      apio_tag: ${{ steps.get_date_tag.outputs.apio_tag }}
-      apio_commit: ${{ steps.get_apio_commit.outputs.apio_commit }}
-      apio_version: ${{ steps.get_apio_version.outputs.apio_version }}
+      apio_tag: ${{steps.get_date_tag.outputs.apio_tag}}
+      apio_commit: ${{steps.get_apio_commit.outputs.apio_commit}}
+      apio_version: ${{steps.get_apio_version.outputs.apio_version}}
 
     env:
       APIO_TAG: value-tbd
@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{env.APIO_REPO}}
-          ref: develop
+          ref: ${{env.APIO_COMMIT}}
           path: apio-repo
           fetch-depth: 0
 
@@ -79,9 +79,10 @@ jobs:
     needs: prepare
     uses: ./.github/workflows/build-darwin-arm64.yml
     with:
-      apio_tag: ${{ needs.prepare.outputs.apio_tag }}
-      apio_commit: ${{ needs.prepare.outputs.apio_commit }}
-      apio_version: ${{ needs.prepare.outputs.apio_version }}
+      apio_repo: ${{needs.prepare.outputs.apio_repo}}
+      apio_tag: ${{needs.prepare.outputs.apio_tag}}
+      apio_commit: ${{needs.prepare.outputs.apio_commit}}
+      apio_version: ${{needs.prepare.outputs.apio_version}}
     secrets: inherit
 
 
@@ -89,9 +90,10 @@ jobs:
     needs: prepare
     uses: ./.github/workflows/build-linux-x86-64.yml
     with:
-      apio_tag: ${{ needs.prepare.outputs.apio_tag }}
-      apio_commit: ${{ needs.prepare.outputs.apio_commit }}
-      apio_version: ${{ needs.prepare.outputs.apio_version }}
+      apio_repo: ${{needs.prepare.outputs.apio_repo}}
+      apio_tag: ${{needs.prepare.outputs.apio_tag}}
+      apio_commit: ${{needs.prepare.outputs.apio_commit}}
+      apio_version: ${{needs.prepare.outputs.apio_version}}
     secrets: inherit
 
 
@@ -99,9 +101,10 @@ jobs:
     needs: prepare
     uses: ./.github/workflows/build-windows-amd64.yml
     with:
-      apio_tag: ${{ needs.prepare.outputs.apio_tag }}
-      apio_commit: ${{ needs.prepare.outputs.apio_commit }}
-      apio_version: ${{ needs.prepare.outputs.apio_version }}
+      apio_repo: ${{needs.prepare.outputs.apio_repo}}
+      apio_tag: ${{needs.prepare.outputs.apio_tag}}
+      apio_commit: ${{needs.prepare.outputs.apio_commit}}
+      apio_version: ${{needs.prepare.outputs.apio_version}}
     secrets: inherit
 
 
@@ -121,9 +124,9 @@ jobs:
 
         - name: Set up env
           run: |
-            echo "APIO_TAG=${{ needs.prepare.outputs.apio_tag }}" >> "$GITHUB_ENV"
-            echo "APIO_COMMIT=${{ needs.prepare.outputs.apio_commit }}" >> "$GITHUB_ENV"
-            echo "APIO_VERSION=${{ needs.prepare.outputs.apio_version }}" >> "$GITHUB_ENV"
+            echo "APIO_TAG=${{needs.prepare.outputs.apio_tag}}" >> "$GITHUB_ENV"
+            echo "APIO_COMMIT=${{needs.prepare.outputs.apio_commit}}" >> "$GITHUB_ENV"
+            echo "APIO_VERSION=${{needs.prepare.outputs.apio_version}}" >> "$GITHUB_ENV"
 
         - name: Download the build artifacts
           uses: actions/download-artifact@v4

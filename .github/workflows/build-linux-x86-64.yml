@@ -4,6 +4,9 @@ name: build-linux-x86-64
 on:
   workflow_call:
     inputs:
+      apio_repo:
+        required: true
+        type: string
       apio_tag:
         required: true
         type: string
@@ -24,6 +27,7 @@ jobs:
       debian:  "apio-linux-x86-64-debian"
 
     env:
+      APIO_REPO: value-tbd
       APIO_TAG: value-tbd
       APIO_COMMIT: value-tbd
       APIO_VERSION: value-tbd
@@ -40,6 +44,7 @@ jobs:
 
       - name: Set up env
         run: |
+          echo "APIO_REPO=${{inputs.apio_repo}}" >> "$GITHUB_ENV"
           echo "APIO_TAG=${{inputs.apio_tag}}" >> "$GITHUB_ENV"
           echo "APIO_COMMIT=${{inputs.apio_commit}}" >> "$GITHUB_ENV"
           echo "APIO_VERSION=${{inputs.apio_version}}" >> "$GITHUB_ENV"
@@ -60,9 +65,8 @@ jobs:
       - name: Checkout the apio repo
         uses: actions/checkout@v4
         with:
-          repository: FPGAwars/apio
-          # repository: zapta/apio-dev
-          ref: develop
+          repository: ${{env.APIO_REPO}}
+          ref: ${{env.APIO_COMMIT}}
           path: apio-repo
           fetch-depth: 0
 
