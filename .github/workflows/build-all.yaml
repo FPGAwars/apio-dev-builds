@@ -23,6 +23,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
+      apio_repo: ${{env.APIO_REPO}}
       apio_tag: ${{steps.get_date_tag.outputs.apio_tag}}
       apio_commit: ${{steps.get_apio_commit.outputs.apio_commit}}
       apio_version: ${{steps.get_apio_version.outputs.apio_version}}
