@@ -17,7 +17,6 @@ jobs:
 # --------------
 
   prepare:
-    # needs: [build-darwin, build-linux, build-windows]
 
     runs-on: ubuntu-latest
 
@@ -71,22 +70,22 @@ jobs:
 
   # --------------
 
-  build-darwin:
+  build-darwin_arm64:
     needs: prepare
     uses: ./.github/workflows/build-darwin-arm64.yml
 
-  build-linux:
+  build-linux-x86-64:
     needs: prepare
     uses: ./.github/workflows/build-linux-x86-64.yml
 
-  build-windows:
+  build-windows-amd64:
     needs: prepare
     uses: ./.github/workflows/build-windows-amd64.yml
 
   # ---------------
 
   publish:
-      needs: [prepare, build-darwin, build-linux, build-windows]
+      needs: [prepare, build-darwin_arm64, build-linux-x86-64, build-windows-amd64]
 
       runs-on: ubuntu-latest
 
@@ -95,7 +94,7 @@ jobs:
 
       steps:
 
-        - name: Init env.
+        - name: Setup env.
           run: |
             echo "DATE_TAG=${{ needs.prepare.outputs.date_tag }}" >> "$GITHUB_ENV"
             echo "APIO_COMMIT=${{ needs.prepare.outputs.apio_version }}" >> "$GITHUB_ENV"
@@ -107,7 +106,7 @@ jobs:
             path: artifacts
 
 
-        - name: List files
+        - name: List artifact files
           run: |
             find artifacts
 
