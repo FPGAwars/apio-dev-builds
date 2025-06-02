@@ -51,12 +51,6 @@ jobs:
           pip install -e apio-repo
 
 
-      - name: Get apio version
-        # id: get_apio_version
-        run: |
-          apio_version="$(pip show apio | grep Version: | cut -d ' ' -f2)"
-          echo ${apio_version}
-          echo "APIO_VERSION=${apio_version}" >> "$GITHUB_ENV"
 
       - name: Get apio config JSON
         id: get_apio_config_json
@@ -123,18 +117,11 @@ jobs:
       steps:
 
 
+        # This copy the apio config json key/val to the env.
         - name: Set up env
           run: |
             echo '${{needs.prepare.outputs.apio_config}}' | jq -r 'to_entries | .[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
 
-
-        - name: Format JSON config
-          id: format_config
-          run: |
-            echo "[${{needs.prepare.outputs.apio_config}}]"
-            echo "CONFIG_JSON<<EOF" >> $GITHUB_OUTPUT
-            echo "${{needs.prepare.outputs.apio_config}}" | jq '.' >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
 
         - name: Download the build artifacts
           uses: actions/download-artifact@v4
@@ -155,20 +142,12 @@ jobs:
             body: |
               This is an automated build of the Apio's repo `develop` branch.
 
-              ```
-              ${{ steps.format_config.outputs.CONFIG_JSON }}
-              ```
-
-              ```
-              ${{needs.prepare.outputs.apio_config}}
-              ```
-
-              ```
-                  APIO_REPO:     ${{env.APIO_REPO}}
-                  APIO_TAG:      ${{env.APIO_TAG}}
-                  APIO_VERSION:  ${{env.APIO_VERSION}}
-                  APIO_COMMIT:   ${{env.APIO_COMMIT}}
-              ```
+              | Config var    | Value                      |
+              | :------------ | :------------------------- |
+              | APIO_REPO     | `${{env.APIO_REPO}}`       |
+              | APIO_TAG      | `${{env.APIO_TAG}}`        |
+              | APIO_VERSION  | `${{env.APIO_VERSION}}`    |
+              | APIO_COMMIT   | `${{env.APIO_COMMIT}}`     |
 
               Resources
               * [installation instructions](https://github.com/${{github.repository}}).
