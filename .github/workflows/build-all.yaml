@@ -116,7 +116,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
-          name: "apio-build-info-${GITHUB_RUN_ID}"
+          name: "apio-build-info-${{env.GITHUB_RUN_ID}}"
           path: "BUILD_INFO"
 
 
