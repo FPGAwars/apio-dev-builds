@@ -7,10 +7,12 @@ on:
   # Allow manual activations.
   workflow_dispatch:
 
-
 permissions:
   # Allow release creation
   contents: write
+
+env:
+  APIO_REPO: 'FPGAwars/apio'
 
 jobs:
 
@@ -43,10 +45,10 @@ jobs:
       - name: Checkout the apio repo
         uses: actions/checkout@v4
         with:
-          repository: FPGAwars/apio
-          # repository: zapta/apio-dev
+          repository: ${{env.APIO_REPO}}
           ref: develop
           path: apio-repo
+          fetch-depth: 0
 
 
       - name: Get apio commit SHA
@@ -143,14 +145,16 @@ jobs:
               This is an automated build of the Apio's repo `develop` branch.
 
               ```
-                  APIO_TAG:      ${{env.APIO_TAG}}
-                  APIO_VERSION:  ${{env.APIO_VERSION}}
-                  APIO_COMMIT:   ${{env.APIO_COMMIT}}
+                  APIO_REPO:     [${{env.APIO_REPO}}]
+                  APIO_TAG:      [${{env.APIO_TAG}}]
+                  APIO_VERSION:  [${{env.APIO_VERSION}}]
+                  APIO_COMMIT:   [${{env.APIO_COMMIT}}]
               ```
 
               Resources
               * [installation instructions](https://github.com/${{github.repository}}).
               * [Official Apio releases](https://github.com/FPGAwars/apio/releases).
+              * [Last commit](https://github.com/${{env.APIO_REPO}}/commit/${{env.APIO_COMMIT}})
 
             files: |
               # Darwin
