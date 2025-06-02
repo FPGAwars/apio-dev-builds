@@ -128,9 +128,8 @@ jobs:
       - name: Add INFO file to package
         run: |
           find artifacts
-          ls -al artifacts
-          cp artifacts/apio-build-info-${APIO_RUN} _dist/apio/INFO
-          cat -n _dist/apio/INFO
+          cp artifacts/BUILD_INFO _dist/apio/BUILD_INFO
+          cat -n _dist/apio/BUILD_INFO
 
           # info_file="_dist/apio/INFO"
           # echo "Build information" >  ${info_file}
