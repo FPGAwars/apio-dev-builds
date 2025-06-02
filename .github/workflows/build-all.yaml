@@ -131,6 +131,7 @@ jobs:
         - name: Format JSON config
           id: format_config
           run: |
+            echo "[${{needs.prepare.outputs.apio_config}}]"
             echo "CONFIG_JSON<<EOF" >> $GITHUB_OUTPUT
             echo "${{needs.prepare.outputs.apio_config}}" | jq '.' >> $GITHUB_OUTPUT
             echo "EOF" >> $GITHUB_OUTPUT
