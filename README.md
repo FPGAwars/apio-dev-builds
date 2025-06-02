@@ -5,7 +5,7 @@
 - [Background](#background)
 - [Installing Apio](#installing-apio)
   - [All supported platforms](#all-supported-platforms)
-    - [Using a pip package](#using-a-pip-package)
+    - [Using a Python pip package](#using-a-python-pip-package)
   - [Mac OSX (Apple Silicon)](#mac-osx-apple-silicon)
     - [Using an installer](#using-an-installer)
     - [Using a file bundle](#using-a-file-bundle)
@@ -51,7 +51,7 @@ Apio is currently supported on the following platforms:
 ----
 ### All supported platforms
 
-#### Using a pip package
+#### Using a Python pip package
 
 This installation method doesn't use a build and instead it simply installs the latest Apio source files as an executable Python Pip package. If you already have Python installed on your system, this may be the easiest way to go. Otherwise, you may consider the self contained installation methods below.
 
