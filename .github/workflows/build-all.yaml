@@ -83,11 +83,11 @@ jobs:
         id: get_apio_config
         run: |
 
-          apio_config=$(jq -c \
-            --arg APIO_REPO "$APIO_REPO" \
-            --arg APIO_COMMIT "$APIO_COMMIT" \
+        apio_config=$(jq -n -c \
+            --arg APIO_REPO    "$APIO_REPO" \
+            --arg APIO_COMMIT  "$APIO_COMMIT" \
             --arg APIO_VERSION "$APIO_VERSION" \
-            --arg APIO_TAG "$APIO_TAG" \
+            --arg APIO_TAG     "$APIO_TAG" \
             '{APIO_REPO: $APIO_REPO, APIO_COMMIT: $APIO_COMMIT, APIO_VERSION: $APIO_VERSION, APIO_TAG: $APIO_TAG}')
 
           echo "apio_config: [$apio_config]"
