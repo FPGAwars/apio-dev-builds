@@ -29,25 +29,12 @@ jobs:
     outputs:
       apio_config: ${{steps.get_apio_config_json.outputs.apio_config}}
 
-      # apio_repo: ${{env.APIO_REPO}}
-      # apio_tag: ${{steps.get_apio_tag.outputs.apio_tag}}
-      # apio_commit: ${{steps.get_apio_commit.outputs.apio_commit}}
-      # apio_version: ${{steps.get_apio_version.outputs.apio_version}}
-
     env:
       APIO_TAG: value-tbd
       APIO_COMMIT: value-tbd
       APIO_VERSION: value-tbd
 
     steps:
-
-      # - name: Get date tag
-      #   # id: get_apio_tag
-      #   run: |
-      #     apio_tag="$(date +'%Y-%m-%d')"
-      #     echo "${apio_tag}"
-      #     echo "APIO_TAG=${apio_tag}" >> "$GITHUB_ENV"
-
 
       - name: Checkout the apio repo
         uses: actions/checkout@v4
@@ -56,14 +43,6 @@ jobs:
           ref: develop
           path: apio-repo
           fetch-depth: 0
-
-
-      # - name: Get apio commit
-      #   # id: get_apio_commit
-      #   run: |
-      #     apio_commit=$(git -C apio-repo rev-parse HEAD)
-      #     echo "${apio_commit}"
-      #     echo "APIO_COMMIT=${apio_commit}" >> "$GITHUB_ENV"
 
 
       - name: Pip install apio
@@ -110,10 +89,6 @@ jobs:
     uses: ./.github/workflows/build-darwin-arm64.yml
     with:
       apio_config: ${{needs.prepare.outputs.apio_config}}
-      # apio_repo: ${{needs.prepare.outputs.apio_repo}}
-      # apio_tag: ${{needs.prepare.outputs.apio_tag}}
-      # apio_commit: ${{needs.prepare.outputs.apio_commit}}
-      # apio_version: ${{needs.prepare.outputs.apio_version}}
     secrets: inherit
 
 
@@ -122,10 +97,6 @@ jobs:
     uses: ./.github/workflows/build-linux-x86-64.yml
     with:
       apio_config: ${{needs.prepare.outputs.apio_config}}
-      # apio_repo: ${{needs.prepare.outputs.apio_repo}}
-      # apio_tag: ${{needs.prepare.outputs.apio_tag}}
-      # apio_commit: ${{needs.prepare.outputs.apio_commit}}
-      # apio_version: ${{needs.prepare.outputs.apio_version}}
     secrets: inherit
 
 
@@ -134,10 +105,6 @@ jobs:
     uses: ./.github/workflows/build-windows-amd64.yml
     with:
       apio_config: ${{needs.prepare.outputs.apio_config}}
-      # apio_repo: ${{needs.prepare.outputs.apio_repo}}
-      # apio_tag: ${{needs.prepare.outputs.apio_tag}}
-      # apio_commit: ${{needs.prepare.outputs.apio_commit}}
-      # apio_version: ${{needs.prepare.outputs.apio_version}}
     secrets: inherit
 
 
@@ -155,13 +122,11 @@ jobs:
 
       steps:
 
-        
+
         - name: Set up env
           run: |
             echo '${{needs.prepare.outputs.apio_config}}' | jq -r 'to_entries | .[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
-            # echo "APIO_TAG=${{needs.prepare.outputs.apio_tag}}" >> "$GITHUB_ENV"
-            # echo "APIO_COMMIT=${{needs.prepare.outputs.apio_commit}}" >> "$GITHUB_ENV"
-            # echo "APIO_VERSION=${{needs.prepare.outputs.apio_version}}" >> "$GITHUB_ENV"
+
 
         - name: Download the build artifacts
           uses: actions/download-artifact@v4
@@ -183,7 +148,7 @@ jobs:
               This is an automated build of the Apio's repo `develop` branch.
 
               ```
-              ${{steps.get_apio_config_json.outputs.apio_config}}
+              ${{needs.prepare.outputs.apio_config}}
               ```
 
               ```
