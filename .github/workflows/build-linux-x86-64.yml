@@ -12,9 +12,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    outputs:
-      bundle:  "apio-linux-x86-64-bundle"
-      debian:  "apio-linux-x86-64-debian"
+    # outputs:
+    #   bundle:  "apio-linux-x86-64-bundle"
+    #   debian:  "apio-linux-x86-64-debian"
 
     env:
       APIO_REPO: value-tbd

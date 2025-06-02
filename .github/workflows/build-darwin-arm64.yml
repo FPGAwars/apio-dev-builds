@@ -11,9 +11,9 @@ jobs:
   build:
     runs-on: macos-latest
 
-    outputs:
-      bundle: "apio-darwin-arm64-bundle"
-      installer: "apio-darwin-arm64-installer"
+    # outputs:
+    #   bundle: "apio-darwin-arm64-bundle"
+    #   installer: "apio-darwin-arm64-installer"
 
     env:
       APIO_REPO: value-tbd

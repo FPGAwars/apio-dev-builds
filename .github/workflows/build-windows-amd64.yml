@@ -13,9 +13,9 @@ jobs:
   build:
     runs-on: windows-latest
 
-    outputs:
-      bundle:     "apio-windows-amd64-bundle"
-      installer:  "apio-windows-amd64-installer"
+    # outputs:
+    #   bundle:     "apio-windows-amd64-bundle"
+    #   installer:  "apio-windows-amd64-installer"
 
     env:
       APIO_REPO: value-tbd

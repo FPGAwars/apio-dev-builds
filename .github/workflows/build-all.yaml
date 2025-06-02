@@ -163,7 +163,35 @@ jobs:
         - name: List artifact files
           run: |
             find artifacts
-            cat artifacts/BUILD_INFO
+            cat artifacts/apio-build-info/BUILD_INFO
+
+
+        - name: Prepare release text
+          run: |
+            out=RELEASE_BODY.txt
+            echo "This is an automated daily build of the Apio's repo `develop` branch." > $out
+
+            echo -e "\n<br>\n" >> $out
+
+            echo "'''" > $out
+            cat artifacts/apio-build-info/BUILD_INFO >> $out
+            echo "'''" > $out
+
+            echo -e "\n<br>\n" >> $out
+
+            echo "'''" > $out
+            cat '${{needs.prepare.outputs.apio_config}}'' >> $out
+            echo "'''" > $out
+
+            echo -e "\n<br>\n" >> $out
+
+            echo 'Additional resources:' >> $out
+            echo '  * [installation instructions](https://github.com/${{github.repository}}).' >> $out
+            echo '  * [Official Apio releases](https://github.com/FPGAwars/apio/releases).' >> $out
+            echo '  * [Last commit](https://github.com/${{env.APIO_REPO}}/commit/${{env.APIO_COMMIT}})' >> $out
+
+            cat -n $out
+
 
 
         - name: Create GitHub release
@@ -171,33 +199,7 @@ jobs:
           with:
             tag_name: ${{env.APIO_TAG}}
             name: ${{env.APIO_TAG}}
-            body: |
-              This is an automated daily build of the Apio's repo `develop` branch.
-
-              <br>
-
-              | Build var     | Value                      |
-              | :------------ | :------------------------- |
-              | APIO_REPO     | ${{env.APIO_REPO}}         |
-              | APIO_TAG      | ${{env.APIO_TAG}}          |
-              | APIO_VERSION  | ${{env.APIO_VERSION}}      |
-              | APIO_COMMIT   | ${{env.APIO_COMMIT}}       |
-
-              <br>
-
-              APIO_CONFIG
-              ```
-              ${{needs.prepare.outputs.apio_config}}
-              ```
-
-
-              <br>
-
-              Additional resources:
-              * [installation instructions](https://github.com/${{github.repository}}).
-              * [Official Apio releases](https://github.com/FPGAwars/apio/releases).
-              * [Last commit](https://github.com/${{env.APIO_REPO}}/commit/${{env.APIO_COMMIT}})
-
+            body_path: RELEASE_BODY.txt
             files: |
               # Darwin
               artifacts/apio-darwin-arm64-bundle/**
