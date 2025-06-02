@@ -47,7 +47,7 @@ jobs:
       - name: Checkout this repo
         uses: actions/checkout@v4
         with:
-          path: apio-dev-build-repo
+          path: apio-dev-builds-repo
 
 
       - name: Checkout the apio repo
@@ -96,7 +96,7 @@ jobs:
             --log-level=DEBUG \
             --workpath _work \
             --distpath _dist \
-            apio-dev-build-repo/.github/workflows/resources/apio-pyinstaller.spec
+            apio-dev-builds-repo/.github/workflows/resources/apio-pyinstaller.spec
           echo "_dist:"
           ls -al _dist
           echo "_dist/apio:"
@@ -166,7 +166,7 @@ jobs:
           # Package control file
           mkdir _debian/DEBIAN
           control="_debian/DEBIAN/control"
-          sed "s/\[APIO_VERSION\]/${APIO_VERSION}/g" apio-dev-build-repo/.github/workflows/resources/linux/control.template > ${control}
+          sed "s/\[APIO_VERSION\]/${APIO_VERSION}/g" apio-dev-builds-repo/.github/workflows/resources/linux/control.template > ${control}
 
           # Show info
           find _debian

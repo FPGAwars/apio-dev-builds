@@ -144,10 +144,10 @@ jobs:
 
               | Config var    | Value                      |
               | :------------ | :------------------------- |
-              | APIO_REPO     | `${{env.APIO_REPO}}`       |
-              | APIO_TAG      | `${{env.APIO_TAG}}`        |
-              | APIO_VERSION  | `${{env.APIO_VERSION}}`    |
-              | APIO_COMMIT   | `${{env.APIO_COMMIT}}`     |
+              | APIO_REPO     | ${{env.APIO_REPO}}         |
+              | APIO_TAG      | ${{env.APIO_TAG}}          |
+              | APIO_VERSION  | ${{env.APIO_VERSION}}      |
+              | APIO_COMMIT   | ${{env.APIO_COMMIT}}       |
 
               Resources
               * [installation instructions](https://github.com/${{github.repository}}).

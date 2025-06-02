@@ -48,7 +48,7 @@ jobs:
       - name: Checkout this repo
         uses: actions/checkout@v4
         with:
-          path: apio-dev-build-repo
+          path: apio-dev-builds-repo
 
 
       - name: Checkout the apio repo
@@ -98,7 +98,7 @@ jobs:
             --log-level=DEBUG \
             --workpath _work \
             --distpath _dist \
-            apio-dev-build-repo/.github/workflows/resources/apio-pyinstaller.spec
+            apio-dev-builds-repo/.github/workflows/resources/apio-pyinstaller.spec
           echo "_dist:"
           ls -al _dist
           echo "_dist/apio:"
@@ -145,7 +145,7 @@ jobs:
       - name: Create innosetup.iss
         run: |
           out="innosetup.iss"
-          sed "s/\[APIO_VERSION\]/${APIO_VERSION}/g" apio-dev-build-repo/.github/workflows/resources/windows/innosetup.template > ${out}
+          sed "s/\[APIO_VERSION\]/${APIO_VERSION}/g" apio-dev-builds-repo/.github/workflows/resources/windows/innosetup.template > ${out}
           ls -al
           cat -n ${out}
 
