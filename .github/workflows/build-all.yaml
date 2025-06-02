@@ -78,7 +78,7 @@ jobs:
 
   # ----- Children build jobs
 
-  build-darwin_arm64:
+  build-darwin-arm64:
     needs: prepare
     uses: ./.github/workflows/build-darwin-arm64.yml
     with:
@@ -105,7 +105,7 @@ jobs:
   # ----- Release creation job
 
   publish:
-      needs: [prepare, build-darwin_arm64, build-linux-x86-64, build-windows-amd64]
+      needs: [prepare, build-darwin-arm64, build-linux-x86-64, build-windows-amd64]
 
       runs-on: ubuntu-latest
 
@@ -143,6 +143,7 @@ jobs:
               This is an automated daily build of the Apio's repo `develop` branch.
 
               <br>
+
               | Build var     | Value                      |
               | :------------ | :------------------------- |
               | APIO_REPO     | ${{env.APIO_REPO}}         |
@@ -151,6 +152,7 @@ jobs:
               | APIO_COMMIT   | ${{env.APIO_COMMIT}}       |
 
               <br>
+
               Additional resources:
               * [installation instructions](https://github.com/${{github.repository}}).
               * [Official Apio releases](https://github.com/FPGAwars/apio/releases).
