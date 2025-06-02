@@ -34,7 +34,7 @@ jobs:
             exit 1
           fi
 
-      # This copy the apio config json key/val to the env.
+      # This copies the apio config json key/val to the env.
       - name: Set up env
         run: |
           echo '${{inputs.apio_config}}' | jq -r 'to_entries | .[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
