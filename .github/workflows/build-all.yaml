@@ -81,17 +81,18 @@ jobs:
           echo '${{steps.get_apio_config_json.outputs.apio_config}}' | jq -r 'to_entries | .[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
 
 
-      - name: Created build info file
+      - name: Create build info file
         run: |
           info_file="BUILD_INFO"
           echo "Build information" >  ${info_file}
           echo "Time:          $(date +'%Y-%m-%d %H:%M:%S %Z')" >> ${info_file}
+          echo "Build repo:    ${{ github.repository }}" >> ${info_file}
           echo "Run ID:        $GITHUB_RUN_ID" >> ${info_file}
           echo "Run number:    $GITHUB_RUN_NUMBER" >> ${info_file}
           echo "Apio SHA:      $APIO_COMMIT" >>  ${info_file}
           echo "Repo repo:     $APIO_REPO" >> ${info_file}
           echo "Apio version:  $APIO_VERSION" >> ${info_file}
-          echo "Repo tag:      $APIO_TAG" >> ${info_file}
+          echo "Release tag:   $APIO_TAG" >> ${info_file}
 
           ls -al
           cat -n BUILD_INFO
