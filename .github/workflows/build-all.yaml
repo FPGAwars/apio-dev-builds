@@ -162,8 +162,8 @@ jobs:
 
             files: |
               # Darwin
-              artifacts/apio-darwin-arm64-installer/**
               artifacts/apio-darwin-arm64-bundle/**
+              artifacts/apio-darwin-arm64-installer/**
 
               # Linux
               artifacts/apio-linux-x86-64-bundle/**
