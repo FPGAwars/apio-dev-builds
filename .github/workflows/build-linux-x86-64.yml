@@ -178,7 +178,7 @@ jobs:
           # Package control file
           mkdir _debian/DEBIAN
           control="_debian/DEBIAN/control"
-          sed "s/\[APIO_VERSION\]/${APIO_VERSION}/g" apio-dev-build-repo/.github/workflows/linux-resources/control.template > ${control}
+          sed "s/\[APIO_VERSION\]/${APIO_VERSION}/g" apio-dev-build-repo/.github/workflows/resources/linux/control.template > ${control}
 
           # Show info
           find _debian

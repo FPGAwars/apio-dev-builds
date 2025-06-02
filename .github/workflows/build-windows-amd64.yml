@@ -156,7 +156,7 @@ jobs:
       - name: Create innosetup.iss
         run: |
           out="innosetup.iss"
-          sed "s/\[APIO_VERSION\]/${APIO_VERSION}/g" apio-dev-build-repo/.github/workflows/windows-resources/innosetup.template > ${out}
+          sed "s/\[APIO_VERSION\]/${APIO_VERSION}/g" apio-dev-build-repo/.github/workflows/resources/windows/innosetup.template > ${out}
           ls -al
           cat -n ${out}
 
