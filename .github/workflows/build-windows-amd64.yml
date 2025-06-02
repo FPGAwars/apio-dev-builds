@@ -111,29 +111,30 @@ jobs:
           file _dist/apio/apio
 
 
-      - name: Add LICENSE file
+      - name: Add the LICENSE file
         run: |
-          cp apio-repo/LICENSE _dist/apio/LICENSE
-          echo "_dist:"
-          ls -al _dist
-          echo "_dist/apio:"
-          ls -al _dist/apio
+          cp apio-repo/LICENSE _dist/apio
+          cat _dist/apio/LICENSE
 
 
-      - name: Add INFO file
+      - name: Download the build-info artifact
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          workflow: ${{env.APIO_WF}}
+          run_id: ${{env.APIO_RUN}}
+          name: apio-build-info-${{env.APIO_RUN}}
+          path: artifacts
+
+
+      - name: Add the BUILD-INFO file
         run: |
-          out="_dist/apio/INFO"
-          echo "Build information" >  ${out}
-          echo "Time:         $(date +'%Y-%m-%d %H:%M:%S %Z')" >> ${out}
-          echo "Run ID:       $GITHUB_RUN_ID" >> ${out}
-          echo "Run number:   $GITHUB_RUN_NUMBER" >> ${out}
-          echo "Commit SHA:   $GITHUB_SHA" >>  ${out}
-          echo "Branch:       ${GITHUB_REF#refs/heads/}" >> ${out}
-          echo "Repo owner:   $GITHUB_REPOSITORY_OWNER" >> ${out}
-          echo "ReponName:    ${GITHUB_REPOSITORY#*/} ">> ${out}
-          echo "_dist/apio:"
-          ls -al _dist/apio
-          cat -n ${out}
+          cp artifacts/BUILD-INFO _dist/apio
+          cat -n _dist/apio/BUILD-INFO
+
+
+      - name: List the bundle files
+        run: |
+          find _dist
 
 
       - name: Zip the pyinstaller bundle
