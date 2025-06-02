@@ -68,7 +68,7 @@ jobs:
           fetch-depth: 0
 
 
-      - name: Pip install apio.
+      - name: Pip install apio
         run: |
           python -m pip install --upgrade pip
           pip install -e apio-repo
@@ -99,7 +99,7 @@ jobs:
           echo "APIO_VERSION=${apio_version}" >> $GITHUB_ENV
 
 
-      - name: Setup working directories.
+      - name: Set up working directories
         run: |
           mkdir _work
           mkdir _dist
@@ -157,7 +157,7 @@ jobs:
           Get-ChildItem -Force
 
 
-      - name: Create innosetup.iss.
+      - name: Create innosetup.iss
         run: |
           out="innosetup.iss"
           sed "s/\[APIO_VERSION\]/${APIO_VERSION}/g" apio-dev-build-repo/.github/workflows/windows-resources/innosetup.template > ${out}
@@ -176,7 +176,7 @@ jobs:
           mv innosetup-installer.exe "apio-windows-amd64-${APIO_VERSION}-${DATE_TAG}-installer.exe"
           ls -al
 
-      - name: Export the pyinstaller bundle as an artifact.
+      - name: Export the pyinstaller bundle as an artifact
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
@@ -184,7 +184,7 @@ jobs:
           path: "apio-windows-amd64-${{env.APIO_VERSION}}-${{env.DATE_TAG}}-bundle.zip"
 
 
-      - name: Export the installer file as an artifact.
+      - name: Export the installer file as an artifact
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error

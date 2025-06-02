@@ -49,7 +49,7 @@ jobs:
           path: apio-repo
 
 
-      - name: Get apio commit SHA.
+      - name: Get apio commit SHA
         id: get_apio_commit
         run: |
           apio_commit=$(git -C apio-repo rev-parse HEAD)
@@ -57,7 +57,7 @@ jobs:
           echo "apio_commit=${apio_commit}" >> "$GITHUB_OUTPUT"
 
 
-      - name: Pip install apio.
+      - name: Pip install apio
         run: |
           python -m pip install --upgrade pip
           pip install -e apio-repo
@@ -101,7 +101,7 @@ jobs:
 
       steps:
 
-        - name: Set up env.
+        - name: Set up env
           run: |
             echo "DATE_TAG=${{ needs.prepare.outputs.date_tag }}" >> "$GITHUB_ENV"
             echo "APIO_COMMIT=${{ needs.prepare.outputs.apio_commit }}" >> "$GITHUB_ENV"

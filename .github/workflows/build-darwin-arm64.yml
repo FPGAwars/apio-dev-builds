@@ -46,7 +46,7 @@ jobs:
       - name: Log architecture info
         run: uname -m
 
-      - name: Set up env.
+      - name: Set up env
         run: |
           echo "DATE_TAG=${{inputs.date_tag}}" >> "$GITHUB_ENV"
           echo "APIO_COMMIT=${{inputs.apio_commit}}" >> "$GITHUB_ENV"
@@ -80,7 +80,7 @@ jobs:
           fetch-depth: 0
 
 
-      - name: Pip install apio.
+      - name: Pip install apio
         run: |
           python -m pip install --upgrade pip
           pip install -e apio-repo
@@ -111,7 +111,7 @@ jobs:
       #     echo "APIO_VERSION=${apio_version}" >> $GITHUB_ENV
 
 
-      - name: Setup working directories.
+      - name: Set up working directories
         run: |
           mkdir _work
           mkdir _dist
@@ -223,7 +223,7 @@ jobs:
           ls -al
 
 
-      - name: Export the pyinstaller bundle as an artifact.
+      - name: Export the pyinstaller bundle as an artifact
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
@@ -231,7 +231,7 @@ jobs:
           path: "apio-darwin-arm64-${{env.APIO_VERSION}}-${{env.DATE_TAG}}-bundle.zip"
 
 
-      - name: Export the installer file as an artifact.
+      - name: Export the installer file as an artifact
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error

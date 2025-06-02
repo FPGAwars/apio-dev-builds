@@ -67,7 +67,7 @@ jobs:
           path: apio-repo
           fetch-depth: 0
 
-      - name: Pip install apio.
+      - name: Pip install apio
         run: |
           python -m pip install --upgrade pip
           pip install -e apio-repo
@@ -98,7 +98,7 @@ jobs:
           echo "APIO_VERSION=${apio_version}" >> $GITHUB_ENV
 
 
-      - name: Setup working directories.
+      - name: Set up working directories
         run: |
           mkdir _work
           mkdir _dist
@@ -197,7 +197,7 @@ jobs:
           ls -l
 
 
-      - name: Export the pyinstaller archive as an artifact.
+      - name: Export the pyinstaller archive as an artifact
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
@@ -205,7 +205,7 @@ jobs:
           path: "apio-linux-x86-64-${{env.APIO_VERSION}}-${{env.DATE_TAG}}-bundle.zip"
 
 
-      - name: Export the installer file as an artifact.
+      - name: Export the installer file as an artifact
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
