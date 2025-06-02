@@ -4,7 +4,7 @@ name: build-windows-amd64
 on:
   workflow_call:
     inputs:
-      date_tag:
+      apio_tag:
         required: true
         type: string
       apio_commit:
@@ -24,7 +24,7 @@ jobs:
       installer:  "apio-windows-amd64-installer"
 
     env:
-      DATE_TAG: value-tbd
+      APIO_TAG: value-tbd
       APIO_COMMIT: value-tbd
       APIO_VERSION: value-tbd
 
@@ -40,15 +40,9 @@ jobs:
 
       - name: Set up env
         run: |
-          echo "DATE_TAG=${{inputs.date_tag}}" >> "$GITHUB_ENV"
+          echo "APIO_TAG=${{inputs.apio_tag}}" >> "$GITHUB_ENV"
           echo "APIO_COMMIT=${{inputs.apio_commit}}" >> "$GITHUB_ENV"
           echo "APIO_VERSION=${{inputs.apio_version}}" >> "$GITHUB_ENV"
-
-      # - name: Create date tag
-      #   run: |
-      #     date_tag="$(date +'%Y-%m-%d')"
-      #     echo "${date_tag}"
-      #     echo "DATE_TAG=${date_tag}" >> "$GITHUB_ENV"
 
 
       - name: Install python
@@ -95,13 +89,6 @@ jobs:
           cat -n $f
           sed -i.bak "/'usb':/d" "$f" && rm -f "${f}.bak"
           cat -n $f
-
-
-      # - name: Extract apio version
-      #   run: |
-      #     apio_version="$(pip show apio | grep Version: | cut -d ' ' -f2)"
-      #     echo ${apio_version}
-      #     echo "APIO_VERSION=${apio_version}" >> $GITHUB_ENV
 
 
       - name: Set up working directories
@@ -156,7 +143,7 @@ jobs:
         run: |
           # The github window bash doesn't have 'zip' so we use powershell instead.
           Push-Location _dist
-          $bundle = "apio-windows-amd64-${{env.APIO_VERSION}}-${{env.DATE_TAG}}-bundle.zip"
+          $bundle = "apio-windows-amd64-${{env.APIO_VERSION}}-${{env.APIO_TAG}}-bundle.zip"
           Compress-Archive -Path apio -DestinationPath ../${bundle}
           Pop-Location
           Get-ChildItem -Force
@@ -178,7 +165,7 @@ jobs:
       - name: Rename innosetup installer
         run: |
           ls -al
-          mv innosetup-installer.exe "apio-windows-amd64-${APIO_VERSION}-${DATE_TAG}-installer.exe"
+          mv innosetup-installer.exe "apio-windows-amd64-${APIO_VERSION}-${APIO_TAG}-installer.exe"
           ls -al
 
       - name: Export the pyinstaller bundle as an artifact
@@ -186,7 +173,7 @@ jobs:
         with:
           if-no-files-found: error
           name: "apio-windows-amd64-bundle"
-          path: "apio-windows-amd64-${{env.APIO_VERSION}}-${{env.DATE_TAG}}-bundle.zip"
+          path: "apio-windows-amd64-${{env.APIO_VERSION}}-${{env.APIO_TAG}}-bundle.zip"
 
 
       - name: Export the installer file as an artifact
@@ -194,4 +181,4 @@ jobs:
         with:
           if-no-files-found: error
           name: "apio-windows-amd64-installer"
-          path: "apio-windows-amd64-${{env.APIO_VERSION}}-${{env.DATE_TAG}}-installer.exe"
+          path: "apio-windows-amd64-${{env.APIO_VERSION}}-${{env.APIO_TAG}}-installer.exe"

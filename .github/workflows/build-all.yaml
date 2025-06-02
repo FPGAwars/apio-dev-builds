@@ -21,12 +21,12 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      date_tag: ${{ steps.get_date_tag.outputs.date_tag }}
+      apio_tag: ${{ steps.get_date_tag.outputs.apio_tag }}
       apio_commit: ${{ steps.get_apio_commit.outputs.apio_commit }}
       apio_version: ${{ steps.get_apio_version.outputs.apio_version }}
 
     env:
-      DATE_TAG: value-tbd
+      APIO_TAG: value-tbd
       APIO_COMMIT: value-tbd
       APIO_VERSION: value-tbd
 
@@ -35,9 +35,9 @@ jobs:
       - name: Get date tag
         id: get_date_tag
         run: |
-          date_tag="$(date +'%Y-%m-%d')"
-          echo "${date_tag}"
-          echo "date_tag=${date_tag}" >> "$GITHUB_OUTPUT"
+          apio_tag="$(date +'%Y-%m-%d')"
+          echo "${apio_tag}"
+          echo "apio_tag=${apio_tag}" >> "$GITHUB_OUTPUT"
 
 
       - name: Checkout the apio repo
@@ -77,7 +77,7 @@ jobs:
     needs: prepare
     uses: ./.github/workflows/build-darwin-arm64.yml
     with:
-      date_tag: ${{ needs.prepare.outputs.date_tag }}
+      apio_tag: ${{ needs.prepare.outputs.apio_tag }}
       apio_commit: ${{ needs.prepare.outputs.apio_commit }}
       apio_version: ${{ needs.prepare.outputs.apio_version }}
     secrets: inherit
@@ -87,7 +87,7 @@ jobs:
     needs: prepare
     uses: ./.github/workflows/build-linux-x86-64.yml
     with:
-      date_tag: ${{ needs.prepare.outputs.date_tag }}
+      apio_tag: ${{ needs.prepare.outputs.apio_tag }}
       apio_commit: ${{ needs.prepare.outputs.apio_commit }}
       apio_version: ${{ needs.prepare.outputs.apio_version }}
     secrets: inherit
@@ -97,7 +97,7 @@ jobs:
     needs: prepare
     uses: ./.github/workflows/build-windows-amd64.yml
     with:
-      date_tag: ${{ needs.prepare.outputs.date_tag }}
+      apio_tag: ${{ needs.prepare.outputs.apio_tag }}
       apio_commit: ${{ needs.prepare.outputs.apio_commit }}
       apio_version: ${{ needs.prepare.outputs.apio_version }}
     secrets: inherit
@@ -111,13 +111,15 @@ jobs:
       runs-on: ubuntu-latest
 
       env:
-        DATE_TAG: date-tag-tbd
+        APIO_TAG: value-tbd
+        APIO_COMMIT: value-tbd
+        APIO_VERSION: value-tbd
 
       steps:
 
         - name: Set up env
           run: |
-            echo "DATE_TAG=${{ needs.prepare.outputs.date_tag }}" >> "$GITHUB_ENV"
+            echo "APIO_TAG=${{ needs.prepare.outputs.apio_tag }}" >> "$GITHUB_ENV"
             echo "APIO_COMMIT=${{ needs.prepare.outputs.apio_commit }}" >> "$GITHUB_ENV"
             echo "APIO_VERSION=${{ needs.prepare.outputs.apio_version }}" >> "$GITHUB_ENV"
 
@@ -135,13 +137,13 @@ jobs:
         - name: Create GitHub release
           uses: softprops/action-gh-release@v2
           with:
-            tag_name: ${{env.DATE_TAG}}
-            name: ${{env.DATE_TAG}}
+            tag_name: ${{env.APIO_TAG}}
+            name: ${{env.APIO_TAG}}
             body: |
               This is an automated build of the Apio's repo `develop` branch.
 
               ```
-                  DATE_TAG:      ${{env.DATE_TAG}}
+                  APIO_TAG:      ${{env.APIO_TAG}}
                   APIO_VERSION:  ${{env.APIO_VERSION}}
                   APIO_COMMIT:   ${{env.APIO_COMMIT}}
               ```
