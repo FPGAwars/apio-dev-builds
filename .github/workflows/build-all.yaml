@@ -63,7 +63,7 @@ jobs:
         run: |
           apio_commit=$(git -C apio-repo rev-parse HEAD)
           echo "${apio_commit}"
-          echo "APIO_COMIT=${apio_commit}" >> "$GITHUB_ENV"
+          echo "APIO_COMMIT=${apio_commit}" >> "$GITHUB_ENV"
 
 
       - name: Pip install apio
@@ -82,14 +82,26 @@ jobs:
       - name: Get apio config
         id: get_apio_config
         run: |
-          apio_config=$(jq -n \
-              --arg APIO_REPO    "$APIO_REPO" \
-              --arg APIO_COMMIT  "$APIO_COMMIT" \
-              --arg APIO_VERSION "$APIO_VERSION" \
-              --arg APIO_TAG     "$APIO_TAG" \
-              '{APIO_REPO: $APIO_REPO, APIO_COMMIT: $APIO_COMMIT, APIO_VERSION: $APIO_VERSION, APIO_TAG: $APIO_TAG}')
-          echo $apio_config
-          echo "apio=${apio_config}" >> "$GITHUB_OUTPUT"
+
+          apio_config=$(jq -c \
+            --arg APIO_REPO "$APIO_REPO" \
+            --arg APIO_COMMIT "$APIO_COMMIT" \
+            --arg APIO_VERSION "$APIO_VERSION" \
+            --arg APIO_TAG "$APIO_TAG" \
+            '{APIO_REPO: $APIO_REPO, APIO_COMMIT: $APIO_COMMIT, APIO_VERSION: $APIO_VERSION, APIO_TAG: $APIO_TAG}')
+
+          echo "$apio_config"
+          echo "apio_config=$apio_config" >> "$GITHUB_OUTPUT"
+
+        
+          # apio_config=$(jq -n \
+          #     --arg APIO_REPO    "$APIO_REPO" \
+          #     --arg APIO_COMMIT  "$APIO_COMMIT" \
+          #     --arg APIO_VERSION "$APIO_VERSION" \
+          #     --arg APIO_TAG     "$APIO_TAG" \
+          #     '{APIO_REPO: $APIO_REPO, APIO_COMMIT: $APIO_COMMIT, APIO_VERSION: $APIO_VERSION, APIO_TAG: $APIO_TAG}')
+          # echo $apio_config
+          # echo "apio_config=${apio_config}" >> "$GITHUB_OUTPUT"
           
 
 
