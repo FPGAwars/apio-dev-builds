@@ -14,7 +14,7 @@ permissions:
 
 jobs:
 
-# --------------
+  # ----- Parameters collection job
 
   prepare:
 
@@ -70,7 +70,8 @@ jobs:
           echo ${apio_version}
           echo "apio_version=${apio_version}" >> $GITHUB_OUTPUT
 
-  # --------------
+
+  # ----- Children build jobs
 
   build-darwin_arm64:
     needs: prepare
@@ -81,15 +82,28 @@ jobs:
       apio_version: ${{ needs.prepare.outputs.apio_version }}
     secrets: inherit
 
+
   build-linux-x86-64:
     needs: prepare
     uses: ./.github/workflows/build-linux-x86-64.yml
+    with:
+      date_tag: ${{ needs.prepare.outputs.date_tag }}
+      apio_commit: ${{ needs.prepare.outputs.apio_commit }}
+      apio_version: ${{ needs.prepare.outputs.apio_version }}
+    secrets: inherit
+
 
   build-windows-amd64:
     needs: prepare
     uses: ./.github/workflows/build-windows-amd64.yml
+    with:
+      date_tag: ${{ needs.prepare.outputs.date_tag }}
+      apio_commit: ${{ needs.prepare.outputs.apio_commit }}
+      apio_version: ${{ needs.prepare.outputs.apio_version }}
+    secrets: inherit
 
-  # ---------------
+
+  # ----- Release creation job
 
   publish:
       needs: [prepare, build-darwin_arm64, build-linux-x86-64, build-windows-amd64]
