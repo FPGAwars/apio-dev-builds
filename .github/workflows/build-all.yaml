@@ -37,6 +37,12 @@ jobs:
 
     steps:
 
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+        with:
+          path: builder-repo
+
+
       - name: Checkout the apio repo
         uses: actions/checkout@v4
         with:
@@ -50,7 +56,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e apio-repo
-
 
 
       - name: Get apio config JSON
@@ -85,16 +90,24 @@ jobs:
 
       - name: Create build info file
         run: |
-          info_file="BUILD_INFO"
-          echo "Build information" >  ${info_file}
-          echo "Time:          $(date +'%Y-%m-%d %H:%M:%S %Z')" >> ${info_file}
-          echo "Build repo:    ${{ github.repository }}" >> ${info_file}
-          echo "Run ID:        $GITHUB_RUN_ID" >> ${info_file}
-          echo "Run number:    $GITHUB_RUN_NUMBER" >> ${info_file}
-          echo "Apio repo:     $APIO_REPO" >> ${info_file}
-          echo "Apio SHA:      $APIO_COMMIT" >>  ${info_file}
-          echo "Apio version:  $APIO_VERSION" >> ${info_file}
-          echo "Release tag:   $APIO_TAG" >> ${info_file}
+          builder_commit=$(git -C builder-repo rev-parse HEAD)
+
+          echo "${apio_commit}"
+          out="BUILD_INFO"
+
+          echo "Builder info" >  ${out}
+          echo "Time:             $(date +'%Y-%m-%d %H:%M:%S %Z')" >> ${out}
+          echo "Build repo:       ${{ github.repository }}" >> ${out}
+          echo "Builder commit:   $builder_commit" >>  ${out}
+          echo "Run ID:           $GITHUB_RUN_ID" >> ${out}
+          echo "Run number:       $GITHUB_RUN_NUMBER" >> ${out}
+
+          echo >> ${out}
+          echo "Build information" >>  ${out}
+          echo "Apio repo:        $APIO_REPO" >> ${out}
+          echo "Apio SHA:         $APIO_COMMIT" >>  ${out}
+          echo "Apio version:     $APIO_VERSION" >> ${out}
+          echo "Release tag:      $APIO_TAG" >> ${out}
 
           ls -al
           cat -n BUILD_INFO
