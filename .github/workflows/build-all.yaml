@@ -30,10 +30,10 @@ jobs:
       apio_config: ${{steps.get_apio_config_json.outputs.apio_config}}
       # apio_build_info: "apio_build_info"
 
-    env:
-      APIO_TAG: value-tbd
-      APIO_COMMIT: value-tbd
-      APIO_VERSION: value-tbd
+    # env:
+    #   APIO_TAG: value-tbd
+    #   APIO_COMMIT: value-tbd
+    #   APIO_VERSION: value-tbd
 
     steps:
 
