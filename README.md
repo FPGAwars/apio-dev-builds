@@ -1,6 +1,23 @@
 <!-- omit in toc -->
-## Apio Developement Duilds
+## Apio Developement Builds
 
+<!-- Use VCS 'Markdown All In One' extension to update this TOC. -->
+- [Background](#background)
+- [Installing Apio](#installing-apio)
+  - [All supported platforms](#all-supported-platforms)
+    - [Using a pip package](#using-a-pip-package)
+  - [Mac OSX (Apple Silicon)](#mac-osx-apple-silicon)
+    - [Using an installer](#using-an-installer)
+    - [Using a file bundle](#using-a-file-bundle)
+  - [Linux (X86 64 bit)](#linux-x86-64-bit)
+    - [Using a Debian package](#using-a-debian-package)
+    - [Using a file bundle](#using-a-file-bundle-1)
+  - [Windows (X86 64 bit)](#windows-x86-64-bit)
+    - [Using an installer](#using-an-installer-1)
+    - [Using a file bundle](#using-a-file-bundle-2)
+
+
+## Background
 
 This repository contains the Apio build workflows, which build the `develop` branch of Apio daily and publish the results in the [Releases section](../../releases) of this repository.  See the instructions below on how to install them on various platforms.
 
@@ -19,32 +36,20 @@ Apio is currently supported on the following platforms:
 * **To upgrade** an already installed Apio, first uninstall it and then install the new version.
 * If you encounter any problem, please **create an issue** in the [Apio's main repository](https://github.com/FPGAwars/apio/issues).
 
-
-
-
-
-**Installation methods:**
-
-<!-- Use VCS 'Markdown All In One' extension to update this TOC. -->
-- [ALL SUPPORTED PLATFORMS](#all-supported-platforms)
-  - [Using a pip package](#using-a-pip-package)
-- [MAC OSX (APPLE SILICON)](#mac-osx-apple-silicon)
-  - [Using an installer](#using-an-installer)
-  - [Using a file bundle](#using-a-file-bundle)
-- [LINUX (X86 64 BIT)](#linux-x86-64-bit)
-  - [Using a Debian package](#using-a-debian-package)
-  - [Using a file bundle](#using-a-file-bundle-1)
-- [WINDOWS (X86 64 BIT)](#windows-x86-64-bit)
-  - [Using an installer](#using-an-installer-1)
-  - [Using a file bundle](#using-a-file-bundle-2)
+<br>
 
 **TODO:** Add installation instructions darwin_x86_64
 
 **TODO:** Add installation instructions linux_aarch64
 
+<br><br>
+
+## Installing Apio
+
+
+
 ----
-### ALL SUPPORTED PLATFORMS
-----
+### All supported platforms
 
 #### Using a pip package
 
@@ -70,8 +75,7 @@ UNINSTALL
 2. Delete the Apio settings directory `.apio` under your home directory.
 
 ----
-### MAC OSX (APPLE SILICON)
-----
+### Mac OSX (Apple Silicon)
 
 #### Using an installer
 
@@ -126,8 +130,7 @@ UNINSTALL
 
 
 ----
-### LINUX (X86 64 BIT)
-----
+### Linux (X86 64 bit)
 
 #### Using a Debian package
 
@@ -179,8 +182,7 @@ UNINSTALL
 
 
 -----
-### WINDOWS (X86 64 BIT)
-----
+### Windows (X86 64 bit)
 
 #### Using an installer
 
