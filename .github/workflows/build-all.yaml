@@ -168,20 +168,25 @@ jobs:
 
         - name: Prepare release text
           run: |
+
+            echo "$APIO_CONFIG" | jq . > APIO_CONFIG.json
+
             out=RELEASE_BODY.txt
-            echo "This is an automated daily build of the Apio's repo `develop` branch." > $out
+            echo "This is an automated daily build of the Apio's repo `develop` branch." >> $out
 
             echo -e "\n<br>\n" >> $out
 
-            echo "'''" > $out
+            echo "BUILD_INFO:" >> $out
+            echo "'''" >> $out
             cat artifacts/apio-build-info/BUILD_INFO >> $out
-            echo "'''" > $out
+            echo "'''" >> $out
 
             echo -e "\n<br>\n" >> $out
 
-            echo "'''" > $out
-            cat '${{needs.prepare.outputs.apio_config}}'' >> $out
-            echo "'''" > $out
+            echo "APIO_CONFIG:" >> $out
+            echo "'''" >> $out
+            cat APIO_CONFIG.json >> $out
+            echo "'''" >> $out
 
             echo -e "\n<br>\n" >> $out
 
