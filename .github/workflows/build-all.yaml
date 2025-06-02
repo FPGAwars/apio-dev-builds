@@ -149,10 +149,10 @@ jobs:
               This is an automated build of the Apio's repo `develop` branch.
 
               ```
-                  APIO_REPO:     [${{env.APIO_REPO}}]
-                  APIO_TAG:      [${{env.APIO_TAG}}]
-                  APIO_VERSION:  [${{env.APIO_VERSION}}]
-                  APIO_COMMIT:   [${{env.APIO_COMMIT}}]
+                  APIO_REPO:     ${{env.APIO_REPO}}
+                  APIO_TAG:      ${{env.APIO_TAG}}
+                  APIO_VERSION:  ${{env.APIO_VERSION}}
+                  APIO_COMMIT:   ${{env.APIO_COMMIT}}
               ```
 
               Resources
@@ -162,8 +162,8 @@ jobs:
 
             files: |
               # Darwin
-              artifacts/apio-darwin-arm64-bundle/**
               artifacts/apio-darwin-arm64-installer/**
+              artifacts/apio-darwin-arm64-bundle/**
 
               # Linux
               artifacts/apio-linux-x86-64-bundle/**
