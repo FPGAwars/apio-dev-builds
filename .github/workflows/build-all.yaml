@@ -28,6 +28,7 @@ jobs:
 
     outputs:
       apio_config: ${{steps.get_apio_config_json.outputs.apio_config}}
+      # apio_build_info: "apio_build_info"
 
     env:
       APIO_TAG: value-tbd
@@ -65,11 +66,12 @@ jobs:
           echo "${apio_tag}"
 
           apio_config=$(jq -n -c \
+              --arg APIO_RUN     "$GITHUB_RUN_ID" \
               --arg APIO_REPO    "$APIO_REPO" \
               --arg APIO_COMMIT  "$apio_commit" \
               --arg APIO_VERSION "$apio_version" \
               --arg APIO_TAG     "$apio_tag" \
-              '{APIO_REPO: $APIO_REPO, APIO_COMMIT: $APIO_COMMIT, APIO_VERSION: $APIO_VERSION, APIO_TAG: $APIO_TAG}')
+              '{APIO_RUN: $APIO_RUN, APIO_REPO: $APIO_REPO, APIO_COMMIT: $APIO_COMMIT, APIO_VERSION: $APIO_VERSION, APIO_TAG: $APIO_TAG}')
 
           echo "$apio_config"
           echo "apio_config=$apio_config" >> "$GITHUB_OUTPUT"
@@ -90,12 +92,19 @@ jobs:
           echo "Run ID:        $GITHUB_RUN_ID" >> ${info_file}
           echo "Run number:    $GITHUB_RUN_NUMBER" >> ${info_file}
           echo "Apio SHA:      $APIO_COMMIT" >>  ${info_file}
-          echo "Repo repo:     $APIO_REPO" >> ${info_file}
+          echo "Apio repo:     $APIO_REPO" >> ${info_file}
           echo "Apio version:  $APIO_VERSION" >> ${info_file}
           echo "Release tag:   $APIO_TAG" >> ${info_file}
 
           ls -al
           cat -n BUILD_INFO
+
+      - name: Export apio build info artifact
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: error
+          name: "apio-build-info"
+          path: "BUILD_INFO"
 
 
   # ----- Children build jobs
@@ -154,6 +163,7 @@ jobs:
         - name: List artifact files
           run: |
             find artifacts
+            cat artifacts/BUILD_INFO
 
 
         - name: Create GitHub release
@@ -172,6 +182,14 @@ jobs:
               | APIO_TAG      | ${{env.APIO_TAG}}          |
               | APIO_VERSION  | ${{env.APIO_VERSION}}      |
               | APIO_COMMIT   | ${{env.APIO_COMMIT}}       |
+
+              <br>
+
+              APIO_CONFIG
+              ```
+              ${{needs.prepare.outputs.apio_config}}
+              ```
+
 
               <br>
 
