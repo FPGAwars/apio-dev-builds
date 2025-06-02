@@ -2,18 +2,17 @@ name: build-windows-amd64
 
 
 on:
-  # Run on each commit to this repo.
-  # push:
-
-  # Run every day at 2AM.
-  # schedule:
-  #   - cron: '0 2 * * *'
-
-  # # Allow manual activations.
-  # workflow_dispatch:
-
-  # Called with input parameters.
   workflow_call:
+    inputs:
+      date_tag:
+        required: true
+        type: string
+      apio_commit:
+        required: true
+        type: string
+      apio_version:
+        required: true
+        type: string
 
 
 jobs:
@@ -39,11 +38,17 @@ jobs:
           systeminfo
 
 
-      - name: Create date tag
+      - name: Set up env
         run: |
-          date_tag="$(date +'%Y-%m-%d')"
-          echo "${date_tag}"
-          echo "DATE_TAG=${date_tag}" >> "$GITHUB_ENV"
+          echo "DATE_TAG=${{inputs.date_tag}}" >> "$GITHUB_ENV"
+          echo "APIO_COMMIT=${{inputs.apio_commit}}" >> "$GITHUB_ENV"
+          echo "APIO_VERSION=${{inputs.apio_version}}" >> "$GITHUB_ENV"
+
+      # - name: Create date tag
+      #   run: |
+      #     date_tag="$(date +'%Y-%m-%d')"
+      #     echo "${date_tag}"
+      #     echo "DATE_TAG=${date_tag}" >> "$GITHUB_ENV"
 
 
       - name: Install python
@@ -92,11 +97,11 @@ jobs:
           cat -n $f
 
 
-      - name: Extract apio version
-        run: |
-          apio_version="$(pip show apio | grep Version: | cut -d ' ' -f2)"
-          echo ${apio_version}
-          echo "APIO_VERSION=${apio_version}" >> $GITHUB_ENV
+      # - name: Extract apio version
+      #   run: |
+      #     apio_version="$(pip show apio | grep Version: | cut -d ' ' -f2)"
+      #     echo ${apio_version}
+      #     echo "APIO_VERSION=${apio_version}" >> $GITHUB_ENV
 
 
       - name: Set up working directories

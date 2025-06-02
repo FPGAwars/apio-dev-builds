@@ -1,17 +1,6 @@
 name: build-darwin-arm64
 
 on:
-  # Run on each commit to this repo.
-  # push:
-
-  # # Run every day at 2AM.
-  # schedule:
-  #   - cron: '0 2 * * *'
-
-  # Allow manual activations.
-  # workflow_dispatch:
-
-  # Called with required input parameters.
   workflow_call:
     inputs:
       date_tag:
