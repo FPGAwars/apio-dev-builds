@@ -46,12 +46,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{env.APIO_REPO}}
-          ref: ${{env.APIO_COMMIT}}
+          ref: develop
           path: apio-repo
           fetch-depth: 0
 
 
-      - name: Get apio commit SHA
+      - name: Get apio commit
         id: get_apio_commit
         run: |
           apio_commit=$(git -C apio-repo rev-parse HEAD)
