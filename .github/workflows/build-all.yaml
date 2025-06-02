@@ -95,7 +95,7 @@ jobs:
           builder_commit=$(git -C builder-repo rev-parse HEAD)
 
           echo "${apio_commit}"
-          out="BUILD_INFO"
+          out="BUILD-INFO"
 
           echo "Builder info" >  ${out}
           echo "Time:             $(date +'%Y-%m-%d %H:%M:%S %Z')" >> ${out}
@@ -112,7 +112,7 @@ jobs:
           echo "Release tag:      $APIO_TAG" >> ${out}
 
           ls -al
-          cat -n BUILD_INFO
+          cat -n BUILD-INFO
 
       # Because we export it also to independent builder workflow, we need
       # a unique name in case multiple instances of this workflows run
@@ -122,7 +122,7 @@ jobs:
         with:
           if-no-files-found: error
           name: "apio-build-info-${{github.run_id}}"
-          path: "BUILD_INFO"
+          path: "BUILD-INFO"
 
 
   # ----- Children build jobs
@@ -188,7 +188,7 @@ jobs:
 
             echo
             find artifacts
-            cat artifacts/apio-build-info/BUILD_INFO
+            cat artifacts/apio-build-info/BUILD-INFO
 
 
         - name: Prepare release text
@@ -209,7 +209,7 @@ jobs:
             echo -e "\n<br>\n" >> $out
 
             echo '```' >> $out
-            cat artifacts/apio-build-info/BUILD_INFO >> $out
+            cat artifacts/apio-build-info/BUILD-INFO >> $out
             echo '```' >> $out
 
             echo -e "\n<br>\n" >> $out
