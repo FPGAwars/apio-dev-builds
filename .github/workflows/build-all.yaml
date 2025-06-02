@@ -116,7 +116,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
-          name: "apio-build-info"
+          name: "apio-build-info-${GITHUB_RUN_ID}"
           path: "BUILD_INFO"
 
 
@@ -176,7 +176,11 @@ jobs:
         - name: List artifact files
           run: |
             find artifacts
-            cat artifacts/apio-build-info/BUILD_INFO
+
+            # Remove the run id unique part.
+            mv artifacts/apio-build-info-${APIO_RUN} artifacts/apio-build-info
+            find artifacts
+            cat artifacts/apio-build-info
 
 
         - name: Prepare release text
