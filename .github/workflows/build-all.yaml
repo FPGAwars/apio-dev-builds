@@ -73,6 +73,11 @@ jobs:
   build-darwin_arm64:
     needs: prepare
     uses: ./.github/workflows/build-darwin-arm64.yml
+    with:
+      date_tag: ${{ needs.prepare.outputs.date_tag }}
+      apio_commit: ${{ needs.prepare.outputs.apio_commit }}
+      apio_version: ${{ needs.prepare.outputs.apio_version }}
+    secrets: inherit
 
   build-linux-x86-64:
     needs: prepare
@@ -117,16 +122,16 @@ jobs:
             tag_name: ${{env.DATE_TAG}}
             name: ${{env.DATE_TAG}}
             body: |
-              This is an automated build of the Apio's develop branch.
+              This is an automated build of the Apio's repo `develop` branch.
 
               | ------------ | --------------------- |
               | Date tag     | ${{env.DATE_TAG}}     |
               | Apio version | ${{env.APIO_VERSION}} |
               | Apio commit  | ${{env.APIO_COMMIT}}  |
 
-              For installation instruction see (https://github.com/${{github.repository}}).
-
-              For the official releases see (https://github.com/FPGAwars/apio/releases).
+              Resources
+              * [installation instructions](https://github.com/${{github.repository}}).
+              * [Official Apio releases](https://github.com/FPGAwars/apio/releases).
 
             files: |
               # Darwin

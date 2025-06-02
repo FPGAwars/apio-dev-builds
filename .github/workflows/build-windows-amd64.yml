@@ -64,7 +64,8 @@ jobs:
           # repository: zapta/apio-dev
           ref: develop
           path: apio-repo
-
+          fetch-depth: 0
+          
 
       - name: Pip install apio.
         run: |
