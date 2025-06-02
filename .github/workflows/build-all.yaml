@@ -4,6 +4,10 @@ on:
   # Run on each commit to this repo.
   push:
 
+  # Run every day at 2AM.
+  schedule:
+    - cron: '0 2 * * *'
+
   # Allow manual activations.
   workflow_dispatch:
 
