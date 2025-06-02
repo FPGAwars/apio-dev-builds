@@ -7,68 +7,169 @@ on:
   # Allow manual activations.
   workflow_dispatch:
 
-
 permissions:
   # Allow release creation
   contents: write
 
+env:
+  APIO_REPO: 'FPGAwars/apio'
+
 jobs:
-  build-darwin:
-    uses: ./.github/workflows/build-darwin-arm64.yml
 
-  build-linux:
-    uses: ./.github/workflows/build-linux-x86-64.yml
+  # ----- Parameters collection job
 
-  build-windows:
-    uses: ./.github/workflows/build-windows-amd64.yml
-
-  publish:
-    needs: [build-darwin, build-linux, build-windows]
+  prepare:
 
     runs-on: ubuntu-latest
 
+    outputs:
+      apio_repo: ${{env.APIO_REPO}}
+      apio_tag: ${{steps.get_date_tag.outputs.apio_tag}}
+      apio_commit: ${{steps.get_apio_commit.outputs.apio_commit}}
+      apio_version: ${{steps.get_apio_version.outputs.apio_version}}
+
     env:
-      DATE_TAG: date-tag-tbd
+      APIO_TAG: value-tbd
+      APIO_COMMIT: value-tbd
+      APIO_VERSION: value-tbd
 
     steps:
 
-      - name: Create date tag
+      - name: Get date tag
+        id: get_date_tag
         run: |
-          date_tag="$(date +'%Y-%m-%d')"
-          echo "${date_tag}"
-          echo "DATE_TAG=${date_tag}" >> "$GITHUB_ENV"
+          apio_tag="$(date +'%Y-%m-%d')"
+          echo "${apio_tag}"
+          echo "apio_tag=${apio_tag}" >> "$GITHUB_OUTPUT"
 
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
+
+      - name: Checkout the apio repo
+        uses: actions/checkout@v4
         with:
-          path: artifacts
+          repository: ${{env.APIO_REPO}}
+          ref: develop
+          path: apio-repo
+          fetch-depth: 0
 
-      - name: List files
+
+      - name: Get apio commit
+        id: get_apio_commit
         run: |
-          find artifacts
+          apio_commit=$(git -C apio-repo rev-parse HEAD)
+          echo "${apio_commit}"
+          echo "apio_commit=${apio_commit}" >> "$GITHUB_OUTPUT"
 
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{env.DATE_TAG}}
-          name: ${{env.DATE_TAG}}
-          body: |
-            This is the automated release of Apio's development branch for ${{env.DATE_TAG}} 
 
-            For installation instruction see (https://github.com/${{github.repository}}).
+      - name: Pip install apio
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e apio-repo
 
-            For the official releases see (https://github.com/FPGAwars/apio/releases).
 
-          files: |
-            # Darwin
-            artifacts/apio-darwin-arm64-bundle/**
-            artifacts/apio-darwin-arm64-installer/**
+      - name: Get apio version
+        id: get_apio_version
+        run: |
+          apio_version="$(pip show apio | grep Version: | cut -d ' ' -f2)"
+          echo ${apio_version}
+          echo "apio_version=${apio_version}" >> $GITHUB_OUTPUT
 
-            # Linux
-            artifacts/apio-linux-x86-64-bundle/**
-            artifacts/apio-linux-x86-64-debian/**
 
-            # Windows
-            artifacts/apio-windows-amd64-bundle/**
-            artifacts/apio-windows-amd64-installer/**
+  # ----- Children build jobs
+
+  build-darwin_arm64:
+    needs: prepare
+    uses: ./.github/workflows/build-darwin-arm64.yml
+    with:
+      apio_repo: ${{needs.prepare.outputs.apio_repo}}
+      apio_tag: ${{needs.prepare.outputs.apio_tag}}
+      apio_commit: ${{needs.prepare.outputs.apio_commit}}
+      apio_version: ${{needs.prepare.outputs.apio_version}}
+    secrets: inherit
+
+
+  build-linux-x86-64:
+    needs: prepare
+    uses: ./.github/workflows/build-linux-x86-64.yml
+    with:
+      apio_repo: ${{needs.prepare.outputs.apio_repo}}
+      apio_tag: ${{needs.prepare.outputs.apio_tag}}
+      apio_commit: ${{needs.prepare.outputs.apio_commit}}
+      apio_version: ${{needs.prepare.outputs.apio_version}}
+    secrets: inherit
+
+
+  build-windows-amd64:
+    needs: prepare
+    uses: ./.github/workflows/build-windows-amd64.yml
+    with:
+      apio_repo: ${{needs.prepare.outputs.apio_repo}}
+      apio_tag: ${{needs.prepare.outputs.apio_tag}}
+      apio_commit: ${{needs.prepare.outputs.apio_commit}}
+      apio_version: ${{needs.prepare.outputs.apio_version}}
+    secrets: inherit
+
+
+  # ----- Release creation job
+
+  publish:
+      needs: [prepare, build-darwin_arm64, build-linux-x86-64, build-windows-amd64]
+
+      runs-on: ubuntu-latest
+
+      env:
+        APIO_TAG: value-tbd
+        APIO_COMMIT: value-tbd
+        APIO_VERSION: value-tbd
+
+      steps:
+
+        - name: Set up env
+          run: |
+            echo "APIO_TAG=${{needs.prepare.outputs.apio_tag}}" >> "$GITHUB_ENV"
+            echo "APIO_COMMIT=${{needs.prepare.outputs.apio_commit}}" >> "$GITHUB_ENV"
+            echo "APIO_VERSION=${{needs.prepare.outputs.apio_version}}" >> "$GITHUB_ENV"
+
+        - name: Download the build artifacts
+          uses: actions/download-artifact@v4
+          with:
+            path: artifacts
+
+
+        - name: List artifact files
+          run: |
+            find artifacts
+
+
+        - name: Create GitHub release
+          uses: softprops/action-gh-release@v2
+          with:
+            tag_name: ${{env.APIO_TAG}}
+            name: ${{env.APIO_TAG}}
+            body: |
+              This is an automated build of the Apio's repo `develop` branch.
+
+              ```
+                  APIO_REPO:     ${{env.APIO_REPO}}
+                  APIO_TAG:      ${{env.APIO_TAG}}
+                  APIO_VERSION:  ${{env.APIO_VERSION}}
+                  APIO_COMMIT:   ${{env.APIO_COMMIT}}
+              ```
+
+              Resources
+              * [installation instructions](https://github.com/${{github.repository}}).
+              * [Official Apio releases](https://github.com/FPGAwars/apio/releases).
+              * [Last commit](https://github.com/${{env.APIO_REPO}}/commit/${{env.APIO_COMMIT}})
+
+            files: |
+              # Darwin
+              artifacts/apio-darwin-arm64-bundle/**
+              artifacts/apio-darwin-arm64-installer/**
+
+              # Linux
+              artifacts/apio-linux-x86-64-bundle/**
+              artifacts/apio-linux-x86-64-debian/**
+
+              # Windows
+              artifacts/apio-windows-amd64-bundle/**
+              artifacts/apio-windows-amd64-installer/**
 

@@ -2,18 +2,20 @@ name: build-windows-amd64
 
 
 on:
-  # Run on each commit to this repo.
-  push:
-
-  # Run every day at 2AM.
-  schedule:
-    - cron: '0 2 * * *'
-
-  # Allow manual activations.
-  workflow_dispatch:
-
-  # Can be called by other workflow.
   workflow_call:
+    inputs:
+      apio_repo:
+        required: true
+        type: string
+      apio_tag:
+        required: true
+        type: string
+      apio_commit:
+        required: true
+        type: string
+      apio_version:
+        required: true
+        type: string
 
 
 jobs:
@@ -25,8 +27,10 @@ jobs:
       installer:  "apio-windows-amd64-installer"
 
     env:
-      DATE_TAG: date-tag-tbd
-      APIO_VERSION: apio-version-rbd
+      APIO_REPO: value-tbd
+      APIO_TAG: value-tbd
+      APIO_COMMIT: value-tbd
+      APIO_VERSION: value-tbd
 
     defaults:
       run:
@@ -38,11 +42,12 @@ jobs:
           systeminfo
 
 
-      - name: Create date tag
+      - name: Set up env
         run: |
-          date_tag="$(date +'%Y-%m-%d')"
-          echo "${date_tag}"
-          echo "DATE_TAG=${date_tag}" >> "$GITHUB_ENV"
+          echo "APIO_REPO=${{inputs.apio_repo}}" >> "$GITHUB_ENV"
+          echo "APIO_TAG=${{inputs.apio_tag}}" >> "$GITHUB_ENV"
+          echo "APIO_COMMIT=${{inputs.apio_commit}}" >> "$GITHUB_ENV"
+          echo "APIO_VERSION=${{inputs.apio_version}}" >> "$GITHUB_ENV"
 
 
       - name: Install python
@@ -60,13 +65,13 @@ jobs:
       - name: Checkout the apio repo
         uses: actions/checkout@v4
         with:
-          # repository: FPGAwars/apio
-          repository: zapta/apio-dev
-          ref: develop
+          repository: ${{env.APIO_REPO}}
+          ref: ${{env.APIO_COMMIT}}
           path: apio-repo
+          fetch-depth: 0
 
 
-      - name: Pip install apio.
+      - name: Pip install apio
         run: |
           python -m pip install --upgrade pip
           pip install -e apio-repo
@@ -90,14 +95,7 @@ jobs:
           cat -n $f
 
 
-      - name: Extract apio version
-        run: |
-          apio_version="$(pip show apio | grep Version: | cut -d ' ' -f2)"
-          echo ${apio_version}
-          echo "APIO_VERSION=${apio_version}" >> $GITHUB_ENV
-
-
-      - name: Setup working directories.
+      - name: Set up working directories
         run: |
           mkdir _work
           mkdir _dist
@@ -149,13 +147,13 @@ jobs:
         run: |
           # The github window bash doesn't have 'zip' so we use powershell instead.
           Push-Location _dist
-          $bundle = "apio-windows-amd64-${{env.APIO_VERSION}}-${{env.DATE_TAG}}-bundle.zip"
+          $bundle = "apio-windows-amd64-${{env.APIO_VERSION}}-${{env.APIO_TAG}}-bundle.zip"
           Compress-Archive -Path apio -DestinationPath ../${bundle}
           Pop-Location
           Get-ChildItem -Force
 
 
-      - name: Create innosetup.iss.
+      - name: Create innosetup.iss
         run: |
           out="innosetup.iss"
           sed "s/\[APIO_VERSION\]/${APIO_VERSION}/g" apio-dev-build-repo/.github/workflows/windows-resources/innosetup.template > ${out}
@@ -171,20 +169,20 @@ jobs:
       - name: Rename innosetup installer
         run: |
           ls -al
-          mv innosetup-installer.exe "apio-windows-amd64-${APIO_VERSION}-${DATE_TAG}-installer.exe"
+          mv innosetup-installer.exe "apio-windows-amd64-${APIO_VERSION}-${APIO_TAG}-installer.exe"
           ls -al
 
-      - name: Export the pyinstaller bundle as an artifact.
+      - name: Export the pyinstaller bundle as an artifact
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
           name: "apio-windows-amd64-bundle"
-          path: "apio-windows-amd64-${{env.APIO_VERSION}}-${{env.DATE_TAG}}-bundle.zip"
+          path: "apio-windows-amd64-${{env.APIO_VERSION}}-${{env.APIO_TAG}}-bundle.zip"
 
 
-      - name: Export the installer file as an artifact.
+      - name: Export the installer file as an artifact
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
           name: "apio-windows-amd64-installer"
-          path: "apio-windows-amd64-${{env.APIO_VERSION}}-${{env.DATE_TAG}}-installer.exe"
+          path: "apio-windows-amd64-${{env.APIO_VERSION}}-${{env.APIO_TAG}}-installer.exe"
