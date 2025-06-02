@@ -126,9 +126,11 @@ jobs:
             body: |
               This is an automated build of the Apio's repo `develop` branch.
 
-              * `DATE_TAG`: ${{env.DATE_TAG}}
-              * `APIO_VERSION`: ${{env.APIO_VERSION}}
-              * `APIO_COMMIT`: ${{env.APIO_COMMIT}}
+              ```
+                  DATE_TAG:      ${{env.DATE_TAG}}
+                  APIO_VERSION:  ${{env.APIO_VERSION}}
+                  APIO_COMMIT:   ${{env.APIO_COMMIT}}
+              ```
 
               Resources
               * [installation instructions](https://github.com/${{github.repository}}).
