@@ -44,7 +44,7 @@ jobs:
 
       - name: Set up env
         run: |
-          echo '${{ inputs.apio_config }}' | jq -r 'to_entries | .[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
+          echo '${{inputs.apio_config}}' | jq -r 'to_entries | .[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
 
           # echo "APIO_REPO=${{inputs.apio_repo}}" >> "$GITHUB_ENV"
           # echo "APIO_TAG=${{inputs.apio_tag}}" >> "$GITHUB_ENV"
