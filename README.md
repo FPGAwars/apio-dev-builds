@@ -48,7 +48,6 @@ Apio is currently supported on the following platforms:
 
 <br>
 
-----
 ## Installing Apio
 ----
 
