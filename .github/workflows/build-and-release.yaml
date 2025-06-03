@@ -1,0 +1,197 @@
+name: build-and-release
+
+on:
+  # Run on each commit to this repo.
+  push:
+
+  # Run daily at 10AM UTC
+  schedule:
+    - cron: "0 10 * * *"
+
+  # Allow manual activations.
+  workflow_dispatch:
+
+permissions:
+  # Allow release creation
+  contents: write
+
+env:
+  # This sets the source apio repo we build.
+  APIO_REPO: "FPGAwars/apio"
+
+jobs:
+  # ----- Parameters collection job
+
+  prepare:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+
+      - name: Checkout the apio repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{env.APIO_REPO}}
+          ref: develop
+          path: apio-repo
+          fetch-depth: 0
+
+      - name: Install python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13" # Adjust version as needed
+
+      # We install apio so we can get its version number.
+      - name: Pip install apio
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e apio-repo
+
+      # Create the build configuration that we will pass to the other jobs.
+      - name: Create build info
+        run: |
+          # Collect values
+          builder_commit=$(git rev-parse HEAD)
+          apio_commit=$(git -C apio-repo rev-parse HEAD)
+          apio_branch=$(git -C apio-repo rev-parse --abbrev-ref HEAD)
+          apio_version="$(pip show apio | grep Version: | cut -d ' ' -f2)"
+          release_tag="$(date +'%Y-%m-%d')"
+          package_tag="${release_tag//-/}"
+
+          # Generate build-info.json
+          cat > build-info.json <<EOF
+          {
+            "name":  "Apio",
+            "description" : "FPGA design tool",
+            "apio-repo":  "${{env.APIO_REPO}}",
+            "apio-commit":  "$apio_commit",
+            "apio-branch":  "$apio_branch",
+            "apio-version": "$apio_version",
+            "release-tag":  "$release_tag",
+            "package-tag":  "$package_tag",
+            "build-time":  "$(date +'%Y-%m-%d %H:%M:%S %Z')",
+            "build-repo":  "${{github.repository}}",
+            "build-commit":  "$builder_commit",
+            "build-workflow":  "${{ github.workflow }}",
+            "workflow-run-id":  "${{github.run_id}}",
+            "workflow-run-number": "${{github.run_number}}"
+          }
+          EOF
+
+          cat -n build-info.json
+
+      - name: Format build info
+        run: |
+          npm install -g json-align
+          json-align --in-place --spaces 2 build-info.json
+          cat -n build-info.json
+
+      - name: Upload the build info artifact
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: error
+          name: build-info
+          path: build-info.json
+
+  # ----- Children build jobs
+
+  # We dispatch separate child workflows because each pyinstaller builder needs to
+  # run on it's target architecture.
+
+  build-darwin-arm64:
+    needs: prepare
+    uses: ./.github/workflows/build-darwin-arm64.yaml
+    secrets: inherit
+
+  build-linux-x86-64:
+    needs: prepare
+    uses: ./.github/workflows/build-linux-x86-64.yaml
+    secrets: inherit
+
+  build-windows-amd64:
+    needs: prepare
+    uses: ./.github/workflows/build-windows-amd64.yaml
+    secrets: inherit
+
+  # # ----- Release creation job
+
+  publish:
+    needs:
+      [prepare, build-darwin-arm64, build-linux-x86-64, build-windows-amd64]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+
+      - name: Download the build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: _artifacts
+
+      - name: Move build info
+        run: |
+          find _artifacts
+          mv _artifacts/build-info.json .
+          cat -n build-info.json
+
+      - name: Set env vars from the build info
+        run: |
+          VARS=(
+            "APIO_REPO        apio-repo"
+            "APIO_COMMIT      apio-commit"
+            "APIO_VERSION  apio-version"
+            "RELEASE_TAG      release-tag"
+            "PACKAGE_TAG      package-tag"
+          )
+
+          for pair in "${VARS[@]}"; do
+            read var key <<< "$pair"
+            value=$(jq -r --arg k "$key" '.[$k]'  build-info.json)
+            echo "$var=$value"
+            echo "$var=$value" >> "$GITHUB_ENV"
+          done
+
+      - name: Prepare release text
+        run: |
+          cat  > RELEASE_BODY.txt <<EOF
+          This is an automated build-and-release of the Apio develop branch.
+
+          Build info:
+          \`\`\`
+          $(tr -d '",{}' < build-info.json)
+          \`\`\`
+
+          Additional resources:
+          * [installation instructions](https://github.com/${{github.repository}})
+          * [Official Apio releases](https://github.com/FPGAwars/apio/releases)
+          * [Cutoff commit](https://github.com/${{env.APIO_REPO}}/commit/${{env.APIO_COMMIT}})
+          EOF
+
+          cat -n $out
+
+      # In case we overwrite and exiting release.
+      - name: Force tag update
+        run: |
+          git tag -f ${{env.RELEASE_TAG}}
+          git push origin -f ${{env.RELEASE_TAG}}
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2.2.2
+        with:
+          tag_name: ${{env.RELEASE_TAG}}
+          name: ${{env.RELEASE_TAG}}
+          body_path: RELEASE_BODY.txt
+          preserve_order: true
+          fail_on_unmatched_files: true
+          # We list explicitly the expected files.
+          files: |
+            _artifacts/apio-darwin-arm64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.zip
+            _artifacts/apio-darwin-arm64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-installer.pkg
+            _artifacts/apio-linux-x86-64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.zip
+            _artifacts/apio-linux-x86-64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-debian.deb
+            _artifacts/apio-windows-amd64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.zip
+            _artifacts/apio-windows-amd64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-installer.exe

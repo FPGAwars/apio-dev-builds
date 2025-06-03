@@ -25,7 +25,7 @@ This repository contains the build workflows and the daily releases of the [Apio
 
 Apio is currently supported on the following platforms:
 
-| Code          | Description                         |
+| Platform Code | Description                         |
 | :------------ | :---------------------------------- |
 | darwin_arm64  | Mac OSX, ARM 64 bit (Apple Silicon) |
 | darwin_x86_64 | Mac OSX, x86 64 bit (Intel)         |
