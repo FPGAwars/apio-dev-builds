@@ -6,7 +6,6 @@
 [![build-all](https://github.com/FPGAwars/apio-dev-builds/actions/workflows/build-all.yaml/badge.svg?branch=main)](https://github.com/FPGAwars/apio-dev-builds/actions/workflows/build-all.yaml)
 
 <!-- Use VCS 'Markdown All In One' extension to update this TOC. -->
-- [Background](#background)
 - [Installing Apio](#installing-apio)
   - [All supported platforms](#all-supported-platforms)
     - [Using a Python pip package](#using-a-python-pip-package)
@@ -20,8 +19,7 @@
     - [Using an installer](#using-an-installer-1)
     - [Using a file bundle](#using-a-file-bundle-2)
 
-
-## Background
+<br>
 
 This repository contains the build workflows and the daily releases of the [Apio](https://github.com/FPGAwars/apio), an easy to use FPGA design framework. For installation, see the instructions below.
 
@@ -48,8 +46,9 @@ Apio is currently supported on the following platforms:
 
 <br>
 
+-----
 ## Installing Apio
-----
+-----
 
 ### All supported platforms
 
