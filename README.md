@@ -1,6 +1,9 @@
 <!-- omit in toc -->
 ## Apio Developement Builds
 
+[![Test](https://github.com/FPGAwars/apio/actions/workflows/test.yml/badge.svg?branch=develop)](https://github.com/FPGAwars/apio/actions/workflows/test.yml)
+[![build-all](https://github.com/FPGAwars/apio-dev-builds/actions/workflows/build-all.yaml/badge.svg?branch=main)](https://github.com/FPGAwars/apio-dev-builds/actions/workflows/build-all.yaml)
+
 <!-- Use VCS 'Markdown All In One' extension to update this TOC. -->
 - [Background](#background)
 - [Installing Apio](#installing-apio)
@@ -90,7 +93,7 @@ xattr -d com.apple.quarantine apio-darwin-arm64-[version]-[date]-installer.pkg
 ```
 
 1. Double click on the installer file and follow the instructions.
-   
+
 2. Run `apio` in a new shell to test the installation.
 
 UNINSTALL
@@ -116,9 +119,12 @@ INSTALL
 source ./activate
 ```
 
-4. Add the `apio` dir to your `$PATH`.
+4. [Optional] Move the `apio` dir to a place of your choosing.
 
-5. Open a new shell and run `apio` to test the installation.
+5. Add the `apio` dir to your `$PATH`.
+
+6. Open a new shell and run `apio` to test the installation.
+
 
 UNINSTALL
 
@@ -167,9 +173,12 @@ INSTALL
 
 2. Unzip the bundle file. This will create an `apio` directory with the application files.
 
-3. Add the `apio` dir to your `$PATH`.
+3. [Optional] Move the `apio` dir to a place of your choosing.
 
-4. Open a new shell and run `apio` to test the installation.
+4. Add the `apio` dir to your `$PATH`.
+
+5. Open a new shell and run `apio` to test the installation.
+
 
 UNINSTALL
 
@@ -209,10 +218,13 @@ INSTALL
 1. Download the bundle file **apio-windows-amd64-[version]-[date]-bundle.zip** from the [latest release](../../releases/latest).
 
 2. Unzip the bundle file. This will create an `apio` directory with the application files.
+  
+3. [Optional] Move the `apio` dir to a place of your choosing.
 
-3. Add the `apio` dir to your `%PATH%`.
+4. Add the `apio` dir to your `%PATH%`.
 
-4. Open a new command window and run `apio` to test the installation.
+5. Open a new command window and run `apio` to test the installation.
+
 
 UNINSTALL
 

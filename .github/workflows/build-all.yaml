@@ -103,18 +103,18 @@ jobs:
           echo "Builder commit:   $builder_commit" >>  ${out}
           echo "Run ID:           ${{github.run_id}}" >> ${out}
           echo "Run number:       ${{github.run_number}}" >> ${out}
+          echo "Release tag:      $APIO_TAG" >> ${out}
 
           echo >> ${out}
           echo "Apio info" >>  ${out}
           echo "Apio repo:        $APIO_REPO" >> ${out}
           echo "Apio SHA:         $APIO_COMMIT" >>  ${out}
           echo "Apio version:     $APIO_VERSION" >> ${out}
-          echo "Release tag:      $APIO_TAG" >> ${out}
 
           ls -al
           cat -n BUILD-INFO
 
-          
+
       # Because we export it also to independent builder workflow, we need
       # a unique name in case multiple instances of this workflows run
       # at the same time.
