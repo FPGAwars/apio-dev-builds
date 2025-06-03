@@ -59,7 +59,7 @@ Apio is currently supported on the following platforms:
 
 This installation method doesn't use a build and instead it simply installs the latest Apio source files as an executable Python Pip package. If you already have Python installed on your system, this may be the easiest way to go. Otherwise, you may consider the self contained installation methods below.
 
-INSTALL
+**Install**
 
 1. Run `python --version`` and verify that you have a reasonably recent python version. See Apio's *requires-python* in it's [project file](https://github.com/FPGAwars/apio/blob/develop/pyproject.toml).
 
@@ -72,7 +72,7 @@ pip install --force-reinstall -U git+https://github.com/FPGAwars/apio.git@develo
 3. Run `apio` in a new shell to test the installation.
 
 
-UNINSTALL
+**Uninstall**
 
 1. Delete the `apio` pip package by running `pip uninstall apio`.
 
@@ -83,7 +83,7 @@ UNINSTALL
 
 #### Using an installer
 
-INSTALL
+**Install**
 
 1. Download the installer file **apio-darwin-arm64-[version]-[date]-installer.pkg** from the [latest release](../../releases/latest).
 
@@ -97,7 +97,7 @@ xattr -d com.apple.quarantine apio-darwin-arm64-[version]-[date]-installer.pkg
 
 2. Run `apio` in a new shell to test the installation.
 
-UNINSTALL
+**Unnstall**
 
 1. Delete the `apio` application from `Applications`.
 
@@ -108,7 +108,7 @@ UNINSTALL
 #### Using a file bundle
 
 
-INSTALL
+**Install**
 
 1. Download the bundle file **apio-darwin-arm64-[version]-[date]-bundle.zip** from the [latest release](../../releases/latest).
 
@@ -127,7 +127,7 @@ source ./activate
 6. Open a new shell and run `apio` to test the installation.
 
 
-UNINSTALL
+**Unnstall**
 
 1. Remove the `apio` directory from your `$PATH`
 
@@ -141,7 +141,7 @@ UNINSTALL
 
 #### Using a Debian package
 
-INSTALL
+**Install**
 
 1. Download the debian package file **apio-linux-x86-64-[version]-[date]-debian.deb** from the [latest release](../../releases/latest).
 
@@ -153,7 +153,7 @@ sudo apt install ./apio-linux-x86-64-[version]-[date]-debian.deb
 
 2. Open a new shell and run `apio` to test the installation.
 
-UNINSTALL
+**Unnstall**
 
 1. Run the following command to uninstall the Debian package:
 
@@ -168,7 +168,7 @@ sudo apt remove apio
 #### Using a file bundle
 
 
-INSTALL
+**Install**
 
 1. Download the bundle file **apio-linux-x86-64-[version]-[date]-bundle.zip** from the [latest release](../../releases/latest).
 
@@ -181,7 +181,7 @@ INSTALL
 5. Open a new shell and run `apio` to test the installation.
 
 
-UNINSTALL
+**Unnstall**
 
 1. Remove the `apio` directory from your `$PATH`
 
@@ -197,7 +197,7 @@ UNINSTALL
 #### Using an installer
 
 
-INSTALL
+**Install**
 
 1. Download the installer file **apio-windows-amd64-[version]-[date]-installer.exe** from the [latest release](../../releases/latest).
 
@@ -206,7 +206,8 @@ INSTALL
 3. Run `apio` in a new shell to test the installation.
 
 
-UNINSTALL
+**Unnstall**
+
 
 1. Remove the `apio` application in windows's `Add or remove programs` settings.
 
@@ -214,7 +215,7 @@ UNINSTALL
 
 #### Using a file bundle
 
-INSTALL
+**Install**
 
 1. Download the bundle file **apio-windows-amd64-[version]-[date]-bundle.zip** from the [latest release](../../releases/latest).
 
@@ -227,7 +228,7 @@ INSTALL
 5. Open a new command window and run `apio` to test the installation.
 
 
-UNINSTALL
+**Unnstall**
 
 1. Remove the `apio` directory from your `%PATH%`
 
