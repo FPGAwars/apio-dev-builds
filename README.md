@@ -48,11 +48,10 @@ Apio is currently supported on the following platforms:
 
 <br>
 
-## Installing Apio
-
-
-
 ----
+## Installing Apio
+----
+
 ### All supported platforms
 
 #### Using a Python pip package
