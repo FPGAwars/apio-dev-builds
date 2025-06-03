@@ -54,13 +54,13 @@ Apio is currently supported on the following platforms:
 
 #### Using a Python pip package
 
-If you have Python installed on your system, you can install Apio as a Pip package. 
+If you have Python installed on your system, you can install Apio as a Pip package.
 
 **Install**
 
-1. Run `python --version`` and verify that you have a reasonably recent python version. See Apio's *requires-python* in it's [project file](https://github.com/FPGAwars/apio/blob/develop/pyproject.toml).
+1. Run `python --version` and verify that you have a 'reasonably recent' python version. (Apio's minimum Python requirement is specified in its [project file](https://github.com/FPGAwars/apio/blob/develop/pyproject.toml)).
 
-2. Install the latest Apio code as a Pip package by running the following command.
+2. Install the latest Apio code by running the following command.
 
 ```
 pip install --force-reinstall -U git+https://github.com/FPGAwars/apio.git@develop#egg=apio
