@@ -23,7 +23,7 @@
 
 ## Background
 
-This repository contains the Apio build workflows, which build the `develop` branch of Apio daily and publish the results in the [Releases section](../../releases) of this repository.  See the instructions below on how to install them on various platforms.
+This repository contains the build workflows and the daily releases of the [Apio](https://github.com/FPGAwars/apio), an easy to use FPGA design framework. For installation, see the instructions below.
 
 Apio is currently supported on the following platforms:
 
