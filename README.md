@@ -54,7 +54,7 @@ Apio is currently supported on the following platforms:
 
 #### Using a Python pip package
 
-If you have Python installed on your system, you can install Apio as a Pip package.
+If you have Python installed on your system, you can use this method to install Apio as a Pip package.
 
 **Install**
 
