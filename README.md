@@ -46,7 +46,7 @@ Apio is currently supported on the following platforms:
 
 **TODO:** Add installation instructions linux_aarch64
 
-<br><br>
+<br>
 
 ## Installing Apio
 
