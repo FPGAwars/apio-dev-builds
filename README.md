@@ -2,7 +2,7 @@
 ## Apio Developement Builds
 
 [![Test](https://github.com/FPGAwars/apio/actions/workflows/test.yml/badge.svg?branch=develop)](https://github.com/FPGAwars/apio/actions/workflows/test.yml)
-[![build-all](https://github.com/zapta/apio-dev-builds-dev/actions/workflows/build-all.yaml/badge.svg?branch=main)](https://github.com/zapta/apio-dev-builds-dev/actions/workflows/build-all.yaml)
+[![build-all](https://github.com/FPGAwars/apio-dev-builds/actions/workflows/build-all.yaml/badge.svg?branch=main)](https://github.com/FPGAwars/apio-dev-builds/actions/workflows/build-all.yaml)
 
 <!-- Use VCS 'Markdown All In One' extension to update this TOC. -->
 - [Background](#background)
