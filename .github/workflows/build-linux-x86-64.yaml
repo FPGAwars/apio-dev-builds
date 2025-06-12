@@ -116,8 +116,8 @@ jobs:
 
       - name: Add the build info file
         run: |
-          cp build-info.json _dist/apio
-          cat -n _dist/apio/build-info.json
+          cp build-info.json _dist/apio/BUILD-INFO.json
+          cat -n _dist/apio/BUILD-INFO.json
 
       - name: Add the LICENSE file
         run: |
