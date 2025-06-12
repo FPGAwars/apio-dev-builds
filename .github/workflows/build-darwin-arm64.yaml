@@ -111,6 +111,18 @@ jobs:
           echo "_dist/apio:"
           ls -al _dist/apio
 
+      - name: Check for symlinks
+        run: |
+          # If this fails, we need to verify we handle symlinks
+          # correctly to the end. See
+          # https://github.com/orgs/pyinstaller/discussions/9166
+          if find _dist -type l | grep -q .; then
+              echo "PyInstaller files contain symlinks"
+              exit 1
+          else
+              echo "No symlinks"
+          fi
+
       - name: Add the build info file
         run: |
           cp build-info.json _dist/apio
@@ -130,13 +142,23 @@ jobs:
         run: |
           find _dist
 
-      - name: Zip the pyinstaller bundle
+      # We don't use .zip in case we will need to handle symlinks.
+      - name: Compress the pyinstaller bundle
         run: |
           pushd _dist
-          bundle="apio-darwin-arm64-${RELEASE_VERSION}-${PACKAGE_TAG}-bundle.zip"
-          zip -r -y ../${bundle} apio
+          bundle="apio-darwin-arm64-${RELEASE_VERSION}-${PACKAGE_TAG}-bundle.tgz"
+          # zip -r -y ../${bundle} apio
+          tar zcf ../{bundle} apio
           popd
           ls -al
+
+      # - name: Zip the pyinstaller bundle
+      #   run: |
+      #     pushd _dist
+      #     bundle="apio-darwin-arm64-${RELEASE_VERSION}-${PACKAGE_TAG}-bundle.zip"
+      #     zip -r -y ../${bundle} apio
+      #     popd
+      #     ls -al
 
       - name: Delete the 'activate' file
         run: |
@@ -186,7 +208,7 @@ jobs:
         with:
           if-no-files-found: error
           name: "apio-darwin-arm64-bundle"
-          path: "apio-darwin-arm64-${{env.RELEASE_VERSION}}-${{env.PACKAGE_TAG}}-bundle.zip"
+          path: "apio-darwin-arm64-${{env.RELEASE_VERSION}}-${{env.PACKAGE_TAG}}-bundle.tgz"
 
       - name: Export the installer file as an artifact
         uses: actions/upload-artifact@v4
