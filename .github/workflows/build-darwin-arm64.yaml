@@ -149,7 +149,7 @@ jobs:
           pushd _dist
           bundle="apio-darwin-arm64-${RELEASE_VERSION}-${PACKAGE_TAG}-bundle.tgz"
           # zip -r -y ../${bundle} apio
-          tar zcf ../{bundle} apio
+          tar zcf ../${bundle} apio
           popd
           ls -al
 
