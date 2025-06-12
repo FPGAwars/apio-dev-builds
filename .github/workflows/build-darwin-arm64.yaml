@@ -111,7 +111,7 @@ jobs:
           echo "_dist/apio:"
           ls -al _dist/apio
 
-      - name: Check for symlinks
+      - name: Show symlinks
         run: |
           # Per the link below, _dist may contain symlinks that
           # we need to propagate all the way.
@@ -138,7 +138,7 @@ jobs:
         run: |
           find _dist
 
-      # We don't use .zip in case we will need to handle symlinks.
+      # We use .tgz and not .zip to preserve symlinks.
       - name: Compress the pyinstaller bundle
         run: |
           pushd _dist

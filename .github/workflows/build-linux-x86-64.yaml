@@ -106,17 +106,13 @@ jobs:
           echo "_dist/apio:"
           ls -al _dist/apio
 
-      - name: Check for symlinks
+      - name: Show symlinks
         run: |
-          # If this fails, we need to verify we handle symlinks
-          # correctly to the end. See
+          # Per the link below, _dist may contain symlinks that
+          # we need to propagate all the way.
           # https://github.com/orgs/pyinstaller/discussions/9166
-          if find _dist -type l | grep -q .; then
-              echo "PyInstaller files contain symlinks"
-              exit 1
-          else
-              echo "No symlinks"
-          fi
+          echo "Searching for symlinks:"
+          find _dist -type l
 
       - name: Add the build info file
         run: |
@@ -132,7 +128,7 @@ jobs:
         run: |
           find _dist
 
-      # We don't use .zip in case we will need to handle symlinks.
+      # We use .tgz and not .zip to preserve symlinks.
       - name: Compress the pyinstaller bundle
         run: |
           pushd _dist
@@ -142,22 +138,15 @@ jobs:
           popd
           ls -al
 
-      # - name: Zip the pyinstaller bundle
-      #   run: |
-      #     pushd _dist
-      #     bundle="apio-linux-x86-64-${RELEASE_VERSION}-${PACKAGE_TAG}-bundle.zip"
-      #     zip -r -y ../${bundle} apio
-      #     popd
-      #     ls -al
-
       - name: Populate the debian package
         run: |
           mkdir _debian
 
           # -- /opt/apio
           mkdir -p _debian/opt/apio
-          cp _dist/apio/apio _debian/opt/apio
-          cp -r _dist/apio/_internal _debian/opt/apio
+          # We mv instead of cp to preserve symlinks.
+          mv _dist/apio/apio _debian/opt/apio
+          mv _dist/apio/_internal _debian/opt/apio
 
           # /usr/local/bin
           mkdir -p _debian/usr/local/bin
