@@ -107,6 +107,18 @@ jobs:
           ls -al _dist/apio
           file _dist/apio/apio
 
+      # Pyinstaller doesn't generate symlinks for windows so we
+      # don't need to worry about them.
+      # https://github.com/orgs/pyinstaller/discussions/9166
+      - name: Check for symlinks
+        run: |
+          if find _dist -type l | grep -q .; then
+              echo "PyInstaller files contain symlinks"
+              exit 1
+          else
+              echo "No symlinks"
+          fi
+
       - name: Add the build info file
         run: |
           cp build-info.json _dist/apio
