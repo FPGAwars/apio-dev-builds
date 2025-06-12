@@ -62,7 +62,7 @@ jobs:
           # Generate build-info.json
           cat > build-info.json <<EOF
           {
-            "name":  "Apio",
+            "package-name":  "apio",
             "description" : "FPGA design tool",
             "apio-repo":  "${{env.APIO_REPO}}",
             "apio-commit":  "$apio_commit",
