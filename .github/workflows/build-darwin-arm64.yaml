@@ -111,17 +111,18 @@ jobs:
           echo "_dist/apio:"
           ls -al _dist/apio
 
-      # - name: Check for symlinks
-      #   run: |
-      #     # If this fails, we need to verify we handle symlinks
-      #     # correctly to the end. See
-      #     # https://github.com/orgs/pyinstaller/discussions/9166
-      #     if find _dist -type l | grep -q .; then
-      #         echo "PyInstaller files contain symlinks"
-      #         exit 1
-      #     else
-      #         echo "No symlinks"
-      #     fi
+      - name: Check for symlinks
+        run: |
+          # If this fails, we need to verify we handle symlinks
+          # correctly to the end. See
+          # https://github.com/orgs/pyinstaller/discussions/9166
+          find _dist -type l
+          if find _dist -type l | grep -q .; then
+              echo "PyInstaller files contain symlinks"
+              exit 1
+          else
+              echo "No symlinks"
+          fi
 
       - name: Add the build info file
         run: |
