@@ -118,7 +118,7 @@ jobs:
 
   # # ----- Release creation job
 
-  conclude:
+  release:
     needs:
       [prepare, build-darwin-arm64, build-linux-x86-64, build-windows-amd64]
 
