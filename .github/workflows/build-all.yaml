@@ -170,6 +170,7 @@ jobs:
           * [Cutoff commit](https://github.com/${{env.APIO_REPO}}/commit/${{env.APIO_COMMIT}})
           EOF
 
+          ls -al
           cat -n $out
 
       - name: Add summary to workflow run
