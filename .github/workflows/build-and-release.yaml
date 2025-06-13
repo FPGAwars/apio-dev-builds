@@ -7,7 +7,7 @@ on:
   # Run daily at 10AM UTC
   schedule:
     # - cron: "0 10 * * *"
-    - cron: "*/10 * * * *"
+    - cron: "0 * * * *"
 
   # Allow manual activations.
   workflow_dispatch:
@@ -203,6 +203,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MAX_RELEASES: 2
         run: |
+          set -x
+          
           # Fetch all releases sorted by creation date (oldest first)
           mapfile -t release_ids < <(
             gh release list --limit 1000 --json id,createdAt \
