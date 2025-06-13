@@ -181,10 +181,10 @@ jobs:
       - name: Prepare release text
         run: |
           cat  > RELEASE_BODY.txt <<EOF
-          This is an latest automated build-all of the Apio develop branch. The
-          release includes the the results of the latest build-all run. For
-          artifacts from previous runs, see the specific run page in the `actions`
-          tab.
+          This is an latest automated build-all of the Apio develop branch. The \
+          release includes the the results of the latest build-all run. For \
+          artifacts from previous runs, see the specific run page in \
+          the \`actions\` tab.
 
           Build info:
           \`\`\`
