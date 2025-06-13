@@ -175,7 +175,7 @@ jobs:
 
       - name: Add summary to workflow run
         run: |
-          cat SUMMARY.TXT >> $GITHUB_STEP_SUMMARY
+          cat SUMMARY.txt >> $GITHUB_STEP_SUMMARY
 
       # In case we overwrite and exiting release.
       # - name: Force tag update
