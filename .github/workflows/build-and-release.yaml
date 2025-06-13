@@ -160,7 +160,7 @@ jobs:
         run: |
           cat  > RUN-SUMMARY.txt <<EOF
           This is an automated build-all run of the Apio develop branch. The artifacts here expire
-          according to the setting of this repository (e.g. 30 days)
+          according to the setting of this repository (e.g. 30 days).
 
           Build info:
           \`\`\`
@@ -199,11 +199,26 @@ jobs:
 
           cat -n $out
 
-      # In case we overwrite and exiting release.
-      - name: Force tag update
+      # Before deleting the release we test that the artifacts exists so
+      # we don't fail with the release deleted.
+      - name: Verify that all artifacts exist
         run: |
-          git tag -f LATEST
-          git push origin -f LATEST
+          ls -l _artifacts/apio-darwin-arm64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.tgz
+          ls -l _artifacts/apio-darwin-arm64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-installer.pkg
+          ls -l _artifacts/apio-linux-x86-64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.tgz
+          ls -l _artifacts/apio-linux-x86-64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-debian.deb
+          ls -l _artifacts/apio-windows-amd64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.zip
+          ls -l _artifacts/apio-windows-amd64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-installer.exe
+
+      - name: Delete release and tag if they exist
+        run: |
+          # Delete the release (if it exists)
+          gh release delete LATEST --yes || true
+
+          # Delete the tag (if it exists)
+          git push origin --delete LATEST || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2.2.2
