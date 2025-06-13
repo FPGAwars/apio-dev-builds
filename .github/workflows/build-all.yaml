@@ -168,7 +168,7 @@ jobs:
         run: |
           cat  > SUMMARY.txt <<EOF
           This is an automated build-all run of the Apio develop branch. The artifacts here expire
-          according to the setting of this repository (up to 90 days)
+          according to the setting of this repository (e.g. 30 days)
 
           Build info:
           \`\`\`
