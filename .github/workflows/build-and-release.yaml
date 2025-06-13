@@ -195,44 +195,51 @@ jobs:
 
           cat -n $out
 
-      # From ChatGPT.
-      # We don't run it after we create the release to make sure it doesn't
-      # delete by mistake the latest release.
-      - name: Delete old releases and tags (keep last N)
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MAX_RELEASES: 2
-        run: |
-          set -x
-          
-          # Fetch all releases sorted by creation date (oldest first)
-          mapfile -t release_ids < <(
-            gh release list --limit 1000 --json id,createdAt \
-              --jq 'sort_by(.createdAt) | .[].id'
-          )
+      - name: Delete old releases
+        uses: Nats-ji/delete-old-releases@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          keep-count: 5
+          keep-old-minor-releases: false
 
-          # How many to delete?
-          to_delete=$(( ${#release_ids[@]} - MAX_RELEASES ))
+      # # From ChatGPT.
+      # # We don't run it after we create the release to make sure it doesn't
+      # # delete by mistake the latest release.
+      # - name: Delete old releases and tags (keep last N)
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     MAX_RELEASES: 2
+      #   run: |
+      #     set -x
 
-          if [ "$to_delete" -gt 0 ]; then
-            echo "Deleting $to_delete old releases and tags..."
-            for ((i = 0; i < to_delete; i++)); do
-              id="${release_ids[$i]}"
+      #     # Fetch all releases sorted by creation date (oldest first)
+      #     mapfile -t release_ids < <(
+      #       gh release list --limit 1000 --json id,createdAt \
+      #         --jq 'sort_by(.createdAt) | .[].id'
+      #     )
 
-              # Get the associated tag name
-              tag=$(gh api "/repos/${{ github.repository }}/releases/$id" --jq '.tag_name')
+      #     # How many to delete?
+      #     to_delete=$(( ${#release_ids[@]} - MAX_RELEASES ))
 
-              echo "Deleting release ID $id with tag '$tag'"
+      #     if [ "$to_delete" -gt 0 ]; then
+      #       echo "Deleting $to_delete old releases and tags..."
+      #       for ((i = 0; i < to_delete; i++)); do
+      #         id="${release_ids[$i]}"
 
-              # Delete the release
-              gh api --method DELETE "/repos/${{ github.repository }}/releases/$id"
+      #         # Get the associated tag name
+      #         tag=$(gh api "/repos/${{ github.repository }}/releases/$id" --jq '.tag_name')
 
-              # Delete the tag from the remote repository
-              git push origin --delete "$tag" || echo "Tag '$tag' not found or already deleted."
-            done
-          else
-            echo "No old releases to delete."
-          fi
+      #         echo "Deleting release ID $id with tag '$tag'"
+
+      #         # Delete the release
+      #         gh api --method DELETE "/repos/${{ github.repository }}/releases/$id"
+
+      #         # Delete the tag from the remote repository
+      #         git push origin --delete "$tag" || echo "Tag '$tag' not found or already deleted."
+      #       done
+      #     else
+      #       echo "No old releases to delete."
+      #     fi
 
       # In case we overwrite and exiting release.
       - name: Force tag update
