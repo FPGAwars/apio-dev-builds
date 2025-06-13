@@ -7,7 +7,7 @@ on:
   # Run daily at 10AM UTC
   schedule:
     # - cron: "0 10 * * *"
-    - cron: "*/20 * * * *"
+    - cron: "*/10 * * * *"
 
   # Allow manual activations.
   workflow_dispatch:
@@ -19,6 +19,8 @@ permissions:
 env:
   # This sets the source apio repo we build.
   APIO_REPO: "FPGAwars/apio"
+  # Number of releases to keep before writing the new one.
+  RELEASE_KEEP_COUNT: 5
 
 jobs:
   # ----- Parameters collection job
@@ -198,12 +200,13 @@ jobs:
       - name: Delete old releases
         uses: Nats-ji/delete-old-releases@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          keep-count: 5
+          token: ${{secrets.GITHUB_TOKEN}}
+          keep-count: ${{env.RELEASE_KEEP_COUNT}}
           keep-old-minor-releases: false
 
-
-      # In case we overwrite and exiting release.
+      # In case we overwrite an exiting release, we want
+      # to update it's commit. This doesn't update the
+      # release time.
       - name: Force tag update
         run: |
           git tag -f ${{env.RELEASE_TAG}}
