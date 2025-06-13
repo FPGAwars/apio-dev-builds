@@ -155,13 +155,10 @@ jobs:
             echo "$var=$value" >> "$GITHUB_ENV"
           done
 
-      # Notes for the run page.
-      - name: Prepare release text
+      # Summary for the run page.
+      - name: Prepare run summary
         run: |
           cat  > RUN-SUMMARY.txt <<EOF
-          This is an automated build-all run of the Apio develop branch. The artifacts here expire
-          according to the setting of this repository (e.g. 30 days).
-
           Build info:
           \`\`\`
           $(tr -d '",{}' < build-info.json)
@@ -173,18 +170,15 @@ jobs:
           ls -al
           cat -n $out
 
-      - name: Add summary to workflow run
+      - name: Add summary to run
         run: |
           cat RUN-SUMMARY.txt >> $GITHUB_STEP_SUMMARY
 
-      # Notes for the LATEST release page.
+      # Notes for the release page.
       - name: Prepare release text
         run: |
-          cat  > RELEASE_BODY.txt <<EOF
-          This is an latest automated build-all of the Apio develop branch. The \
-          release includes the the results of the latest build-all run. For \
-          artifacts from previous runs, see the specific run page in \
-          the \`actions\` tab.
+          cat  > RELEASE-BODY.txt <<EOF
+          This is the daily build of the Apio \`develop\` branch.
 
           Build info:
           \`\`\`
@@ -201,31 +195,37 @@ jobs:
 
       # Before deleting the release we test that the artifacts exists so
       # we don't fail with the release deleted.
-      - name: Verify that all artifacts exist
-        run: |
-          ls -l _artifacts/apio-darwin-arm64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.tgz
-          ls -l _artifacts/apio-darwin-arm64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-installer.pkg
-          ls -l _artifacts/apio-linux-x86-64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.tgz
-          ls -l _artifacts/apio-linux-x86-64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-debian.deb
-          ls -l _artifacts/apio-windows-amd64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.zip
-          ls -l _artifacts/apio-windows-amd64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-installer.exe
+      # - name: Verify that all artifacts exist
+      #   run: |
+      #     ls -l _artifacts/apio-darwin-arm64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.tgz
+      #     ls -l _artifacts/apio-darwin-arm64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-installer.pkg
+      #     ls -l _artifacts/apio-linux-x86-64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.tgz
+      #     ls -l _artifacts/apio-linux-x86-64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-debian.deb
+      #     ls -l _artifacts/apio-windows-amd64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.zip
+      #     ls -l _artifacts/apio-windows-amd64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-installer.exe
 
-      - name: Delete release and tag if they exist
-        run: |
-          # Delete the release (if it exists)
-          gh release delete LATEST --yes || true
+      # - name: Delete release and tag if they exist
+      #   run: |
+      #     # Delete the release (if it exists)
+      #     gh release delete LATEST --yes || true
 
-          # Delete the tag (if it exists)
-          git push origin --delete LATEST || true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     # Delete the tag (if it exists)
+      #     git push origin --delete LATEST || true
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # In case we overwrite and exiting release.
+      - name: Force tag update
+        run: |
+          git tag -f ${{env.RELEASE_TAG}}
+          git push origin -f ${{env.RELEASE_TAG}}
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2.2.2
         with:
-          tag_name: LATEST
-          name: LATEST
-          body_path: RELEASE_BODY.txt
+          tag_name: ${{env.RELEASE_TAG}}
+          name: ${{env.RELEASE_TAG}}
+          body_path: RELEASE-BODY.txt
           preserve_order: true
           fail_on_unmatched_files: true
           # We list explicitly the expected files.
