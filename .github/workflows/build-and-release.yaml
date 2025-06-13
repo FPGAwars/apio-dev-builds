@@ -1,4 +1,4 @@
-name: build-and-release
+name: build-all
 
 on:
   # Run on each commit to this repo.
@@ -157,8 +157,8 @@ jobs:
 
       - name: Prepare release text
         run: |
-          cat  > RELEASE_BODY.txt <<EOF
-          This is an automated build-and-release of the Apio develop branch.
+          cat  > SUMMARY.txt <<EOF
+          This is an automated build-all run of the Apio develop branch.
 
           Build info:
           \`\`\`
@@ -167,31 +167,34 @@ jobs:
 
           Additional resources:
           * [installation instructions](https://github.com/${{github.repository}})
-          * [Official Apio releases](https://github.com/FPGAwars/apio/releases)
           * [Cutoff commit](https://github.com/${{env.APIO_REPO}}/commit/${{env.APIO_COMMIT}})
           EOF
 
           cat -n $out
 
-      # In case we overwrite and exiting release.
-      - name: Force tag update
+      - name: Add summary to workflow run
         run: |
-          git tag -f ${{env.RELEASE_TAG}}
-          git push origin -f ${{env.RELEASE_TAG}}
+          cat SUMMARY.TXT >> $GITHUB_STEP_SUMMARY
 
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v2.2.2
-        with:
-          tag_name: ${{env.RELEASE_TAG}}
-          name: ${{env.RELEASE_TAG}}
-          body_path: RELEASE_BODY.txt
-          preserve_order: true
-          fail_on_unmatched_files: true
-          # We list explicitly the expected files.
-          files: |
-            _artifacts/apio-darwin-arm64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.tgz
-            _artifacts/apio-darwin-arm64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-installer.pkg
-            _artifacts/apio-linux-x86-64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.tgz
-            _artifacts/apio-linux-x86-64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-debian.deb
-            _artifacts/apio-windows-amd64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.zip
-            _artifacts/apio-windows-amd64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-installer.exe
+      # In case we overwrite and exiting release.
+      # - name: Force tag update
+      #   run: |
+      #     git tag -f ${{env.RELEASE_TAG}}
+      #     git push origin -f ${{env.RELEASE_TAG}}
+
+      # - name: Create GitHub release
+      #   uses: softprops/action-gh-release@v2.2.2
+      #   with:
+      #     tag_name: ${{env.RELEASE_TAG}}
+      #     name: ${{env.RELEASE_TAG}}
+      #     body_path: RELEASE_BODY.txt
+      #     preserve_order: true
+      #     fail_on_unmatched_files: true
+      #     # We list explicitly the expected files.
+      #     files: |
+      #       _artifacts/apio-darwin-arm64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.tgz
+      #       _artifacts/apio-darwin-arm64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-installer.pkg
+      #       _artifacts/apio-linux-x86-64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.tgz
+      #       _artifacts/apio-linux-x86-64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-debian.deb
+      #       _artifacts/apio-windows-amd64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.zip
+      #       _artifacts/apio-windows-amd64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-installer.exe
