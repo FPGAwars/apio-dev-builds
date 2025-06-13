@@ -126,7 +126,7 @@ jobs:
       - name: Checkout this repo
         uses: actions/checkout@v4
 
-      - name: Download the build artifacts
+      - name: Download the artifacts
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true
@@ -155,19 +155,27 @@ jobs:
             echo "$var=$value" >> "$GITHUB_ENV"
           done
 
+      - name: Verify all artifacts exist
+        run: |
+          ls -l _artifacts/apio-darwin-arm64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.tgz
+          ls -l _artifacts/apio-darwin-arm64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-installer.pkg
+          ls -l _artifacts/apio-linux-x86-64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.tgz
+          ls -l _artifacts/apio-linux-x86-64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-debian.deb
+          ls -l _artifacts/apio-windows-amd64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.zip
+          ls -l _artifacts/apio-windows-amd64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-installer.exe
+
       - name: Prepare release text
         run: |
           cat  > SUMMARY.txt <<EOF
-          This is an automated build-all run of the Apio develop branch.
+          This is an automated build-all run of the Apio develop branch. The artifacts here expire
+          according to the setting of this repository (up to 90 days)
 
           Build info:
           \`\`\`
           $(tr -d '",{}' < build-info.json)
           \`\`\`
 
-          Additional resources:
-          * [installation instructions](https://github.com/${{github.repository}})
-          * [Cutoff commit](https://github.com/${{env.APIO_REPO}}/commit/${{env.APIO_COMMIT}})
+          [Cutoff commit](https://github.com/${{env.APIO_REPO}}/commit/${{env.APIO_COMMIT}})
           EOF
 
           ls -al
@@ -176,26 +184,3 @@ jobs:
       - name: Add summary to workflow run
         run: |
           cat SUMMARY.txt >> $GITHUB_STEP_SUMMARY
-
-      # In case we overwrite and exiting release.
-      # - name: Force tag update
-      #   run: |
-      #     git tag -f ${{env.RELEASE_TAG}}
-      #     git push origin -f ${{env.RELEASE_TAG}}
-
-      # - name: Create GitHub release
-      #   uses: softprops/action-gh-release@v2.2.2
-      #   with:
-      #     tag_name: ${{env.RELEASE_TAG}}
-      #     name: ${{env.RELEASE_TAG}}
-      #     body_path: RELEASE_BODY.txt
-      #     preserve_order: true
-      #     fail_on_unmatched_files: true
-      #     # We list explicitly the expected files.
-      #     files: |
-      #       _artifacts/apio-darwin-arm64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.tgz
-      #       _artifacts/apio-darwin-arm64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-installer.pkg
-      #       _artifacts/apio-linux-x86-64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.tgz
-      #       _artifacts/apio-linux-x86-64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-debian.deb
-      #       _artifacts/apio-windows-amd64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.zip
-      #       _artifacts/apio-windows-amd64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-installer.exe
