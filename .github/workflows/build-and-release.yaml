@@ -182,7 +182,7 @@ jobs:
           cat  > RELEASE-BODY.txt <<EOF
           This is the daily build of the Apio \`develop\` branch.
 
-          This repository maintains only the **last ${{env.RELEASE_KEEP_COUNT}} releases** \
+          > This workflow  keeps behind only the last N workflows and deletes the rest
           so make sure to save the files if you need them for a longer time.
 
           Build info:
