@@ -19,7 +19,7 @@ env:
   # This sets the source apio repo we build.
   APIO_REPO: "FPGAwars/apio"
   # Number of releases to keep before writing the new one.
-  RELEASE_KEEP_COUNT: 5
+  RELEASE_KEEP_COUNT: 30
 
 jobs:
   # ----- Parameters collection job
