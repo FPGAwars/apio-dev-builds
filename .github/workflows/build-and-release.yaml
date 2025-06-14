@@ -58,8 +58,7 @@ jobs:
           apio_commit=$(git -C apio-repo rev-parse HEAD)
           apio_branch=$(git -C apio-repo rev-parse --abbrev-ref HEAD)
           apio_version="$(pip show apio | grep Version: | cut -d ' ' -f2)"
-          # release_tag="$(date +'%Y-%m-%d')"
-          release_tag="$(date +'%Y-%m-%d-%H-%M-%S')"
+          release_tag="$(date +'%Y-%m-%d')"
           package_tag="${release_tag//-/}"
 
           # Generate build-info.json
