@@ -1,13 +1,12 @@
 name: build-and-release
 
 on:
-  # Run on each commit to this repo.
+  # Run on each commit to this builder repo.
   push:
 
   # Run daily at 10AM UTC
   schedule:
-    # - cron: "0 10 * * *"
-    - cron: "*/10 * * * *"
+    - cron: "0 10 * * *"
 
   # Allow manual activations.
   workflow_dispatch:
