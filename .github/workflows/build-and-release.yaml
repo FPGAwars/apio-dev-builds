@@ -50,7 +50,7 @@ jobs:
           echo "APIO_LATEST_COMMIT=$apio_latest_commit" >> $GITHUB_ENV
 
           # Strip leading and trailing spaces
-          sha="$(echo "${{ github.event.inputs.commit_sha }}" | xargs)"
+          sha="$(echo "${{github.event.inputs.commit_sha}}" | xargs)"
 
           # User specified commit SHA.
           if [ -n "$sha" ]; then
@@ -101,6 +101,7 @@ jobs:
             "package-name":  "apio",
             "description" : "FPGA design tool",
             "apio-repo":  "${{env.APIO_REPO}}",
+            "requested-apio-commit" : "${{github.event.inputs.commit_sha}}",
             "apio-commit":  "$apio_commit",
             "apio-branch":  "$apio_branch",
             "apio-version": "$apio_version",
