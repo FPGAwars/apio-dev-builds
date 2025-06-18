@@ -10,6 +10,11 @@ on:
 
   # Allow manual activations.
   workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: "[Optional] Apio commit SHA to build"
+        required: false
+        default: ""
 
 permissions:
   # Allow release creation
@@ -39,6 +44,35 @@ jobs:
           path: apio-repo
           fetch-depth: 0
 
+      - name: Determine Apio commit to use
+        run: |
+          apio_latest_commit=$(git -C apio-repo rev-parse HEAD)
+          echo "APIO_LATEST_COMMIT=$apio_latest_commit" >> $GITHUB_ENV
+
+          # Strip leading and trailing spaces
+          sha="$(echo "${{github.event.inputs.commit_sha}}" | xargs)"
+
+          # User specified commit SHA.
+          if [ -n "$sha" ]; then
+            echo "APIO_COMMIT=$sha" >> $GITHUB_ENV
+            echo "COMMIT_NOTE=Using manual Apio commit" >> $GITHUB_ENV
+
+          # Default behavior, use latest commit.
+          else
+            echo "APIO_COMMIT=$apio_latest_commit" >> $GITHUB_ENV
+            echo "COMMIT_NOTE=Using latest Apio commit" >> $GITHUB_ENV
+          fi
+
+      - name: Check selected Apio commit
+        run: |
+          git -C apio-repo fetch origin
+          git -C apio-repo checkout "$APIO_COMMIT"
+
+          echo "$COMMIT_NOTE"
+          echo "Selected: $APIO_COMMIT"
+          echo "Latest:   $APIO_LATEST_COMMIT"
+          echo "Current:  $(git -C apio-repo rev-parse HEAD)"
+
       - name: Install python
         uses: actions/setup-python@v5
         with:
@@ -67,6 +101,7 @@ jobs:
             "package-name":  "apio",
             "description" : "FPGA design tool",
             "apio-repo":  "${{env.APIO_REPO}}",
+            "requested-apio-commit" : "${{github.event.inputs.commit_sha}}",
             "apio-commit":  "$apio_commit",
             "apio-branch":  "$apio_branch",
             "apio-version": "$apio_version",
