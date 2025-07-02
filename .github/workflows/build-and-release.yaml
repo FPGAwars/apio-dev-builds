@@ -12,17 +12,14 @@ on:
   workflow_dispatch:
     inputs:
       commit_sha:
-        description: "[Optional] Apio commit SHA to build"
+        description: "[Optional] Apio commit SHA to build (latest)"
         required: false
-        default: ""
       apio_repo:
-        description: "[Optional] The Apio source repo"
+        description: "[Optional] Apio source repo (fpgawars/apio)"
         required: false
-        default: "fpgawars/apio"
       apio_branch:
-        description: "[Optional] The Apio source branch"
+        description: "[Optional] Apio source branch (develop)"
         required: false
-        default: "develop"
 
 permissions:
   # Allow release creation
