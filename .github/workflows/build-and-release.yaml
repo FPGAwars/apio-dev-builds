@@ -12,17 +12,24 @@ on:
   workflow_dispatch:
     inputs:
       commit_sha:
-        description: "[Optional] Apio commit SHA to build"
+        description: "[Optional] Apio commit SHA to build (latest)"
         required: false
-        default: ""
+      apio_repo:
+        description: "[Optional] Apio source repo (fpgawars/apio)"
+        required: false
+      apio_branch:
+        description: "[Optional] Apio source branch (develop)"
+        required: false
 
 permissions:
   # Allow release creation
   contents: write
 
 env:
-  # This sets the source apio repo we build.
-  APIO_REPO: "FPGAwars/apio"
+  # Set env with repo and branch inputs.
+  APIO_REPO: ${{github.event.inputs.apio_repo || 'fpgawars/apio'}}
+  APIO_BRANCH: ${{github.event.inputs.apio_branch || 'develop'}}
+
   # Number of releases to keep before writing the new one.
   RELEASE_KEEP_COUNT: 30
 
@@ -40,7 +47,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{env.APIO_REPO}}
-          ref: develop
+          ref: ${{env.BRANCH}}
           path: apio-repo
           fetch-depth: 0
 
