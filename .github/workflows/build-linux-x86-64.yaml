@@ -127,7 +127,7 @@ jobs:
       - name: Add the 'readme' file
         run: |
           cat <<EOF > _dist/apio/README.txt
-          This is an Apio file bundle for Linux x86-64.
+          This is the Apio file bundle for Linux x86-64.
 
           For installation instructions see
           https://fpgawars.github.io/apio/installing-apio/#linux-x86-bundle

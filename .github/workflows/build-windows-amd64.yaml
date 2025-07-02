@@ -132,10 +132,10 @@ jobs:
       - name: Add the 'readme' file
         run: |
           cat <<EOF > _dist/apio/README.txt
-          This is an Apio file bundle for Windows amd64.
+          This is the Apio file bundle for Windows x86-64 (aka amd64)
 
           For installation instructions see
-          https://fpgawars.github.io/apio/installing-apio/#windows-amd64-bundle
+          https://fpgawars.github.io/apio/installing-apio/#windows-x86-64-bundle
 
           For bundle information see BUILD-INFO.json.
           EOF
