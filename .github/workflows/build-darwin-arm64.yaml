@@ -138,7 +138,11 @@ jobs:
         run: |
           cat <<EOF > _dist/apio/README.txt
           This is an Apio file bundle for macOS arm64.
-          For installation instructions see: see https://fpgawars.github.io/apio/installing-apio/#mac-arm64-bundle
+
+          For installation instructions see
+          https://fpgawars.github.io/apio/installing-apio/#mac-arm64-bundle
+
+          For bundle info see BUILD-INFO.json.
           EOF
 
       - name: List the bundle files
