@@ -124,6 +124,17 @@ jobs:
           cp _apio-repo/LICENSE _dist/apio
           cat _dist/apio/LICENSE
 
+      - name: Add the 'readme' file
+        run: |
+          cat <<EOF > _dist/apio/README.txt
+          This is an Apio file bundle for Linux x86-64.
+
+          For installation instructions see
+          https://fpgawars.github.io/apio/installing-apio/#linux-x86-bundle
+
+          For bundle information see BUILD-INFO.json.
+          EOF
+
       - name: List the bundle files
         run: |
           find _dist

@@ -142,7 +142,7 @@ jobs:
           For installation instructions see
           https://fpgawars.github.io/apio/installing-apio/#mac-arm64-bundle
 
-          For bundle info see BUILD-INFO.json.
+          For bundle information see BUILD-INFO.json.
           EOF
 
       - name: List the bundle files
