@@ -30,8 +30,8 @@ permissions:
 
 env:
   # Set env with repo and branch inputs.
-  APIO_REPO: ${{github.event.inputs.apio_repo}}
-  APIO_BRANCH: ${{github.event.inputs.apio_branch}}
+  APIO_REPO: ${{github.event.inputs.apio_repo || 'fpgawars/apio'}}
+  APIO_BRANCH: ${{github.event.inputs.apio_branch || 'develop'}}
 
   # Number of releases to keep before writing the new one.
   RELEASE_KEEP_COUNT: 30
