@@ -15,14 +15,20 @@ on:
         description: "[Optional] Apio commit SHA to build"
         required: false
         default: ""
+      apio_repo:
+        description: "[Optional] The Apio source repo"
+        required: false
+        default: "fpgawars/apio"
+      apio_branch:
+        description: "[Optional] The Apio source branch"
+        required: false
+        default: "develop"
 
 permissions:
   # Allow release creation
   contents: write
 
 env:
-  # This sets the source apio repo we build.
-  APIO_REPO: "FPGAwars/apio"
   # Number of releases to keep before writing the new one.
   RELEASE_KEEP_COUNT: 30
 
@@ -33,6 +39,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Copy input params to env
+        run: |
+          echo "APIO_REPO=${{github.event.inputs.apio_repo}}" >> $GITHUB_ENV
+          echo "APIO_BRANCH=${{github.event.inputs.apio_branch}}" >> $GITHUB_ENV
+
       - name: Checkout this repo
         uses: actions/checkout@v4
 
@@ -40,7 +51,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{env.APIO_REPO}}
-          ref: develop
+          ref: ${{env.BRANCH}}
           path: apio-repo
           fetch-depth: 0
 
