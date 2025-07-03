@@ -129,11 +129,6 @@ jobs:
           cp _apio-repo/LICENSE _dist/apio
           cat _dist/apio/LICENSE
 
-      - name: Add the 'activate' file
-        run: |
-          cp .github/workflows/resources/darwin/activate _dist/apio
-          cat -n _dist/apio/activate
-
       - name: Add the 'readme' file
         run: |
           cat <<EOF > _dist/apio/README.txt
@@ -158,9 +153,8 @@ jobs:
           popd
           ls -al
 
-      - name: Delete the 'activate' and 'readme' files
+      - name: Delete the readme files
         run: |
-          rm _dist/apio/activate
           rm _dist/apio/README.txt
           echo "_dist/apio:"
           ls -al _dist/apio
