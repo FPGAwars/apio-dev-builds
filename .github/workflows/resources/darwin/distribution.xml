@@ -6,7 +6,7 @@
 
     <domains enable_anywhere="true" enable_localSystem="true" enable_currentUserHome="false"/>
 
-    <conclusion file="conclusion.html" mime-type="text/html" />
+    <conclusion file="README.html" mime-type="text/html" />
 
     <pkg-ref id="io.github.fpgawars.apio"/>
 
