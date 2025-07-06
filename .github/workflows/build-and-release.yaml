@@ -11,16 +11,15 @@ on:
   # Allow manual activations.
   workflow_dispatch:
     inputs:
-      commit_sha:
-        description: "[Optional] Apio commit SHA to build (latest)"
-        required: false
       apio_repo:
         description: "[Optional] Apio source repo (fpgawars/apio)"
         required: false
       apio_branch:
         description: "[Optional] Apio source branch (develop)"
         required: false
-
+      commit_sha:
+        description: "[Optional] Apio commit SHA to build (latest)"
+        required: false
 permissions:
   # Allow release creation
   contents: write
