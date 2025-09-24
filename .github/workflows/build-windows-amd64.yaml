@@ -161,11 +161,11 @@ jobs:
           ls -al
           cat -n ${out}
 
+      # Build the windows installer.
       - name: Run innosetup
-        shell: cmd
-        run: |
-          "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" innosetup.iss
-          dir
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.7
+        with:
+            path: innosetup.iss
 
       - name: Rename innosetup installer
         run: |
