@@ -145,7 +145,7 @@ jobs:
           name: build-info
           path: build-info.json
 
-      - name: Set python version outout
+      - name: Set python version output
         id: set-output
         run: |
           echo "python_version=${{env.PYTHON_VERSION}}" >> $GITHUB_OUTPUT
