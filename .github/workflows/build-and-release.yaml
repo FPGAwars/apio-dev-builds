@@ -25,8 +25,13 @@ permissions:
   contents: write
 
 env:
-  # Set env with repo and branch inputs.
+  # Python version to use (e.g. for pyinstaller binary)
+  PYTHON_VERSION: "3.13"
+
+  # Apio github repo to use.
   APIO_REPO: ${{github.event.inputs.apio_repo || 'fpgawars/apio'}}
+
+  # Apio repo branch to use.
   APIO_BRANCH: ${{github.event.inputs.apio_branch || 'develop'}}
 
   # Number of releases to keep before writing the new one.
@@ -37,6 +42,9 @@ jobs:
 
   prepare:
     runs-on: ubuntu-latest
+
+    outputs:
+      python_version: ${{ steps.set-output.outputs.python_version }}
 
     steps:
       - name: Checkout this repo
@@ -82,7 +90,7 @@ jobs:
       - name: Install python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13" # Adjust version as needed
+          python-version: ${{env.PYTHON_VERSION}}
 
       # We install apio so we can get its version number.
       - name: Pip install apio
@@ -137,6 +145,11 @@ jobs:
           name: build-info
           path: build-info.json
 
+      - name: Set python version outout
+        id: set-output
+        run: |
+          echo "python_version=${{env.PYTHON_VERSION}}" >> $GITHUB_OUTPUT
+
   # ----- Children build jobs
 
   # We dispatch separate child workflows because each pyinstaller builder needs to
@@ -146,16 +159,22 @@ jobs:
     needs: prepare
     uses: ./.github/workflows/build-darwin-arm64.yaml
     secrets: inherit
+    with:
+      python_version: ${{ needs.prepare.outputs.python_version }}
 
   build-linux-x86-64:
     needs: prepare
     uses: ./.github/workflows/build-linux-x86-64.yaml
     secrets: inherit
+    with:
+      python_version: ${{ needs.prepare.outputs.python_version }}
 
   build-windows-amd64:
     needs: prepare
     uses: ./.github/workflows/build-windows-amd64.yaml
     secrets: inherit
+    with:
+      python_version: ${{ needs.prepare.outputs.python_version }}
 
   # # ----- Release creation job
 
