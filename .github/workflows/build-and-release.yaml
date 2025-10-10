@@ -26,7 +26,7 @@ permissions:
 
 env:
   # Python version to use (e.g. for pyinstaller binary)
-  PYTHON_VERSION: "3.13"
+  PYTHON_VERSION: "3.14"
 
   # Apio github repo to use.
   APIO_REPO: ${{github.event.inputs.apio_repo || 'fpgawars/apio'}}
