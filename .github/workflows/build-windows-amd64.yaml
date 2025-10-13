@@ -2,6 +2,10 @@ name: build-windows-amd64
 
 on:
   workflow_call:
+    inputs:
+      python_version:
+        required: true
+        type: string
 
 jobs:
   build:
@@ -68,7 +72,7 @@ jobs:
       - name: Install python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13" # Adjust version as needed
+          python-version: ${{ inputs.python_version }}
 
       - name: Checkout the apio repo
         uses: actions/checkout@v4
@@ -165,7 +169,7 @@ jobs:
       - name: Run innosetup
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.7
         with:
-            path: innosetup.iss
+          path: innosetup.iss
 
       - name: Rename innosetup installer
         run: |
