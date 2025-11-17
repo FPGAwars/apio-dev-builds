@@ -107,6 +107,7 @@ jobs:
           apio_branch=$(git -C apio-repo rev-parse --abbrev-ref HEAD)
           apio_version="$(pip show apio | grep Version: | cut -d ' ' -f2)"
           release_tag="$(date +'%Y-%m-%d')"
+          package_tag="${release_tag//-/}"
 
           # Generate build-info.json
           cat > build-info.json <<EOF
@@ -119,6 +120,7 @@ jobs:
             "apio-branch":  "$apio_branch",
             "apio-version": "$apio_version",
             "release-tag":  "$release_tag",
+            "package-tag":  "$package_tag",
             "build-time":  "$(date +'%Y-%m-%d %H:%M:%S %Z')",
             "build-repo":  "${{github.repository}}",
             "build-commit":  "$builder_commit",
