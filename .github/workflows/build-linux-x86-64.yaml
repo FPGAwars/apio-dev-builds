@@ -9,7 +9,11 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # As of Nov 2025, using here ubuntu-latest results in ubuntu 24.04.03
+    # which uses glibc 2.39 which results in library mismatch on older
+    # ubuntu with glibc 2.39. That's why we limit to 22.04 which should
+    # be forward compatible with 24.04.03.
+    runs-on: ubuntu-22.04
 
     defaults:
       run:
@@ -59,6 +63,7 @@ jobs:
             "APIO_REPO        apio-repo"
             "APIO_COMMIT      apio-commit"
             "RELEASE_VERSION  apio-version"
+            "RELEASE_TAG      release-tag"
             "PACKAGE_TAG      package-tag"
           )
 
@@ -147,7 +152,7 @@ jobs:
       - name: Compress the pyinstaller bundle
         run: |
           pushd _dist
-          bundle="apio-linux-x86-64-${RELEASE_VERSION}-${PACKAGE_TAG}-bundle.tgz"
+          bundle="apio-linux-x86-64-${PACKAGE_TAG}-bundle.tgz"
           # zip -r -y ../${bundle} apio
           tar zcf ../${bundle} apio
           popd
@@ -183,7 +188,7 @@ jobs:
 
       - name: Build .deb package
         run: |
-          dpkg-deb --build --root-owner-group _debian "apio-linux-x86-64-${RELEASE_VERSION}-${PACKAGE_TAG}-debian.deb"
+          dpkg-deb --build --root-owner-group _debian "apio-linux-x86-64-${PACKAGE_TAG}-debian.deb"
           ls -l
 
       - name: Export the pyinstaller archive as an artifact
@@ -191,11 +196,11 @@ jobs:
         with:
           if-no-files-found: error
           name: "apio-linux-x86-64-bundle"
-          path: "apio-linux-x86-64-${{env.RELEASE_VERSION}}-${{env.PACKAGE_TAG}}-bundle.tgz"
+          path: "apio-linux-x86-64-${{env.PACKAGE_TAG}}-bundle.tgz"
 
       - name: Export the installer file as an artifact
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
           name: "apio-linux-x86-64-debian"
-          path: "apio-linux-x86-64-${{env.RELEASE_VERSION}}-${{env.PACKAGE_TAG}}-debian.deb"
+          path: "apio-linux-x86-64-${{env.PACKAGE_TAG}}-debian.deb"
