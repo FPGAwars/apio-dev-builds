@@ -107,7 +107,6 @@ jobs:
           apio_branch=$(git -C apio-repo rev-parse --abbrev-ref HEAD)
           apio_version="$(pip show apio | grep Version: | cut -d ' ' -f2)"
           release_tag="$(date +'%Y-%m-%d')"
-          package_tag="${release_tag//-/}"
 
           # Generate build-info.json
           cat > build-info.json <<EOF
@@ -120,7 +119,6 @@ jobs:
             "apio-branch":  "$apio_branch",
             "apio-version": "$apio_version",
             "release-tag":  "$release_tag",
-            "package-tag":  "$package_tag",
             "build-time":  "$(date +'%Y-%m-%d %H:%M:%S %Z')",
             "build-repo":  "${{github.repository}}",
             "build-commit":  "$builder_commit",
@@ -214,7 +212,6 @@ jobs:
             "APIO_COMMIT      apio-commit"
             "APIO_VERSION  apio-version"
             "RELEASE_TAG      release-tag"
-            "PACKAGE_TAG      package-tag"
           )
 
           for pair in "${VARS[@]}"; do
@@ -296,9 +293,9 @@ jobs:
           # We list explicitly the expected files.
           files: |
             build-info.json
-            _artifacts/apio-darwin-arm64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.tgz
-            _artifacts/apio-darwin-arm64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-installer.pkg
-            _artifacts/apio-linux-x86-64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.tgz
-            _artifacts/apio-linux-x86-64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-debian.deb
-            _artifacts/apio-windows-amd64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-bundle.zip
-            _artifacts/apio-windows-amd64-${{env.APIO_VERSION}}-${{env.PACKAGE_TAG}}-installer.exe
+            _artifacts/apio-darwin-arm64-${{env.RELEASE_TAG}}-bundle.tgz
+            _artifacts/apio-darwin-arm64-${{env.RELEASE_TAG}}-installer.pkg
+            _artifacts/apio-linux-x86-64-${{env.RELEASE_TAG}}-bundle.tgz
+            _artifacts/apio-linux-x86-64-${{env.RELEASE_TAG}}-debian.deb
+            _artifacts/apio-windows-amd64-${{env.RELEASE_TAG}}-bundle.zip
+            _artifacts/apio-windows-amd64-${{env.RELEASE_TAG}}-installer.exe
