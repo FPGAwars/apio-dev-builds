@@ -63,6 +63,7 @@ jobs:
             "APIO_REPO        apio-repo"
             "APIO_COMMIT      apio-commit"
             "RELEASE_VERSION  apio-version"
+            "RELEASE_TAG      release-tag"
           )
 
           for pair in "${VARS[@]}"; do
