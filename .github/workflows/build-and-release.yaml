@@ -1,8 +1,6 @@
 name: build-and-release
 
 on:
-  # Run on each commit to this builder repo.
-  push:
 
   # Run daily at 10AM UTC
   schedule:
@@ -347,7 +345,7 @@ jobs:
           release-drop: false
           # Delete old pre-releases, keep the newest 10 (excluding the absolute latest)
           pre-release-drop: true
-          pre-release-keep-count: 10
+          pre-release-keep-count: 5
           pre-release-drop-tag: true  # Also delete tags of deleted pre-releases
           # Keep all drafts.
           draft-drop: false
