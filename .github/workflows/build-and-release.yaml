@@ -34,9 +34,6 @@ env:
   # Apio repo branch to use.
   APIO_BRANCH: ${{github.event.inputs.apio_branch || 'develop'}}
 
-  # Number of releases to keep before writing the new one.
-  RELEASE_KEEP_COUNT: 30
-
 jobs:
   # ----- Parameters collection job
 
@@ -183,6 +180,8 @@ jobs:
       [prepare, build-darwin-arm64, build-linux-x86-64, build-windows-amd64]
 
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout this repo
@@ -194,12 +193,26 @@ jobs:
           merge-multiple: true
           path: _artifacts
 
+      # Repo: https://github.com/Cisco-Talos/clamav
+      # Home: https://www.clamav.net/
       - name: Install anti virus (ClamAV)
         run: |
           sudo apt-get update
           sudo apt-get install -y clamav clamav-daemon
+
+      - name: Update virus signatures
+        run: |
           sudo systemctl stop clamav-freshclam || true
           sudo freshclam --verbose
+
+      - name: Display clamav version (app/database)
+        run: clamscan --version
+
+      # Scans recursively inside the .tgz packages.
+      # See : https://linux.die.net/man/1/clamscan
+      # - name: Scan the packages for viruses
+      #   run: |
+      #     clamscan -r --verbose --scan-archive=yes _artifacts/apio-*.*
 
       - name: Move build info
         run: |
@@ -264,12 +277,82 @@ jobs:
 
           cat -n $out
 
-      - name: Delete old releases
-        uses: Nats-ji/delete-old-releases@v1
+      # - name: Delete old releases
+      #   uses: Nats-ji/delete-old-releases@v1
+      #   with:
+      #     token: ${{secrets.GITHUB_TOKEN}}
+      #     keep-count: ${{env.RELEASE_KEEP_COUNT}}
+      #     keep-old-minor-releases: false
+
+      # # - Delete old releases that marks as 'pre release' and their
+      # # - tags. Does not affect release that are not marked 'prerelease'.
+      # - name: Clean up old pre-releases
+      #   uses: actions/github-script@v7
+      #   with:
+      #     script: |
+      #       const KEEP_COUNT = 10;
+
+      #       console.log(`Retention policy: keep the ${KEEP_COUNT} newest pre-releases`);
+      #       console.log(`Regular (stable) releases are never deleted\n`);
+
+      #       const owner = "${{ github.repository_owner }}";
+      #       const repo  = "${{ github.repository }}".split("/")[1];
+
+      #       console.log(`Running cleanup for ${owner}/${repo}`);
+
+      #       const releases = await github.rest.repos.listReleases({
+      #         owner,
+      #         repo,
+      #         per_page: 100
+      #       });
+
+      #       // Separate pre-releases and regular releases
+      #       const preReleases = releases.data
+      #         .filter(r => r.prerelease)
+      #         .sort((a, b) => b.created_at.localeCompare(a.created_at));
+
+      #       const regularReleases = releases.data.filter(r => !r.prerelease);
+
+      #       // Determine which pre-releases to delete (older than KEEP_COUNT)
+      #       const toKeep = preReleases.slice(0, KEEP_COUNT);
+      #       const toDelete = preReleases.slice(KEEP_COUNT);
+
+      #       // Log status for every single release
+      #       for (const r of preReleases) {
+      #         if (toKeep.includes(r)) {
+      #           console.log(`Kept     pre-release  ${r.tag_name} (${new Date(r.created_at).toLocaleDateString()})`);
+      #         } else {
+      #           console.log(`Deleted  pre-release  ${r.tag_name} (${new Date(r.created_at).toLocaleDateString()})`);
+      #           await github.rest.repos.deleteRelease({ owner, repo, release_id: r.id });
+      #           await github.rest.git.deleteRef({ owner, repo, ref: `tags/${r.tag_name}` });
+      #         }
+      #       }
+
+      #       for (const r of regularReleases) {
+      #         console.log(`Kept     release      ${r.tag_name} (${new Date(r.created_at).toLocaleDateString()})`);
+      #       }
+
+      #       // Final summary
+      #       console.log('\n=== Cleanup Summary ===');
+      #       console.log(`Pre-releases kept     : ${toKeep.length}`);
+      #       console.log(`Pre-releases deleted  : ${toDelete.length}`);
+      #       console.log(`Regular releases found: ${regularReleases.length} (untouched)`);
+      #       console.log(`Total releases found  : ${releases.data.length}`);
+
+      # Delete old pre-releases, keeps all releases.
+      - name: Delete old pre-releases
+        uses: sgpublic/delete-release-action@v1.2
         with:
-          token: ${{secrets.GITHUB_TOKEN}}
-          keep-count: ${{env.RELEASE_KEEP_COUNT}}
-          keep-old-minor-releases: false
+          # Keep all stable releases .
+          release-drop: false
+          # Delete old pre-releases, keep the newest 10 (excluding the absolute latest)
+          pre-release-drop: true
+          pre-release-keep-count: 10
+          pre-release-drop-tag: true  # Also delete tags of deleted pre-releases
+          # Keep all drafts.
+          draft-drop: false
+        env:
+          GITHUB_TOKEN: ${{ github.token }} 
 
       # In case we overwrite an exiting release, we want
       # to update it's commit. This doesn't update the
@@ -279,21 +362,16 @@ jobs:
           git tag -f ${{env.RELEASE_TAG}}
           git push origin -f ${{env.RELEASE_TAG}}
 
-      # Scans recursively inside the .tgz packages.
-      # See https://linux.die.net/man/1/clamscan
-      - name: Scan the packages for viruses
-        run: |
-          clamscan -r --verbose --scan-archive=yes _artifacts/apio-*.*
-
-      - name: Create GitHub release
+      - name: Create GitHub pre-release
         uses: softprops/action-gh-release@v2.2.2
         with:
           tag_name: ${{env.RELEASE_TAG}}
           name: ${{env.RELEASE_TAG}}
           body_path: RELEASE-BODY.txt
+          prerelease: true
           preserve_order: true
           fail_on_unmatched_files: true
-          # We list explicitly the expected files.
+          # We intensionally list explicitly all the expected files.
           files: |
             build-info.json
             _artifacts/apio-darwin-arm64-${{env.PACKAGE_TAG}}-bundle.tgz
