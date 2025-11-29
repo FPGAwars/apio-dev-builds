@@ -6,6 +6,7 @@
 <br>
 
 This repository contains the daily builds of the Apio `develop` branch. They are available here
-as daily releases.
+as daily pre-releases that are deleted after a few days, unless marked manually to be full releases (that is,
+their 'pre-release' check box is turned off.)
 
 Apio's is a an easy to use FPGA programming toolset and its home page is at https://github.com/FPGAwars/apio
