@@ -1,10 +1,9 @@
 name: build-and-release
 
 on:
-
-  # Run daily at 10AM UTC
+  # Run daily after UTC midnight.
   schedule:
-    - cron: "0 10 * * *"
+    - cron: "1 0 * * *"
 
   # Allow manual activations.
   workflow_dispatch:
@@ -18,6 +17,7 @@ on:
       commit_sha:
         description: "[Optional] Apio commit SHA to build (latest)"
         required: false
+        
 permissions:
   # Allow release creation
   contents: write
@@ -346,11 +346,11 @@ jobs:
           # Delete old pre-releases, keep the newest 10 (excluding the absolute latest)
           pre-release-drop: true
           pre-release-keep-count: 5
-          pre-release-drop-tag: true  # Also delete tags of deleted pre-releases
+          pre-release-drop-tag: true # Also delete tags of deleted pre-releases
           # Keep all drafts.
           draft-drop: false
         env:
-          GITHUB_TOKEN: ${{ github.token }} 
+          GITHUB_TOKEN: ${{ github.token }}
 
       # In case we overwrite an exiting release, we want
       # to update it's commit. This doesn't update the
