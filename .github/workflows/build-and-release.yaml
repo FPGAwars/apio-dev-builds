@@ -209,9 +209,11 @@ jobs:
 
       # Scans recursively inside the .tgz packages.
       # See : https://linux.die.net/man/1/clamscan
-      # - name: Scan the packages for viruses
-      #   run: |
-      #     clamscan -r --verbose --scan-archive=yes _artifacts/apio-*.*
+      # To check a suspected file for viruses upload to
+      # https://www.virustotal.com/gui/home/upload
+      - name: Scan the packages for viruses
+        run: |
+          clamscan -r --verbose --scan-archive=yes _artifacts/apio-*.*
 
       - name: Move build info
         run: |
