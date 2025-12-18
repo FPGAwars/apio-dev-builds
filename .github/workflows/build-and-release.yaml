@@ -276,7 +276,7 @@ jobs:
           \`\`\`
 
           Additional resources:
-          * [Installation instructions](https://fpgawars.github.io/apio/installing-apio)
+          * [Installation instructions](https://fpgawars.github.io/apio/docs/quick-start)
           * [Official Apio releases](https://github.com/FPGAwars/apio/releases)
           EOF
 
