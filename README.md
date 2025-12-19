@@ -1,4 +1,4 @@
-**THIS REPO IS OBSOLETE AND CAN BE DELETED**
+**THIS REPO IS OBSOLETE AND CAN BE DELETED AFTER JUNE 2026**
 
 The build workflows from fpgawars/apio-dev-builds are now in fpgawars/apio.
 
