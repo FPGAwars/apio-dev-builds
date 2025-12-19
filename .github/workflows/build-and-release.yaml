@@ -3,8 +3,8 @@ name: build-and-release
 on:
   # Runs daily at UTC midnight to minimize risk of overstepping
   # manual builds of same date.
-  schedule:
-    - cron: "0 0 * * *"
+  # schedule:
+  #   - cron: "0 0 * * *"
 
   # Allow manual activations.
   workflow_dispatch:
