@@ -1,3 +1,9 @@
+**THIS REPO IS OBSOLETE AND CAN BE DELETED**
+
+The build workflows from fpgawars/apio-dev-builds are now in fpgawars/apio.
+
+---
+
 ## Apio Builds
 
 > **Note:** Please **do not** open issues in this repository.
